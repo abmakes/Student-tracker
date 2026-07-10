@@ -131,6 +131,7 @@
   }
   .start-btn:active{transform:translate(4px,4px); box-shadow:0 0 0 var(--border-color);}
   .start-btn:disabled{opacity:.45; cursor:not-allowed;}
+  .resume-btn{background:var(--mint); margin-bottom:12px;}
 
   .limit-note{font-size:12.5px; color:var(--coral); margin-top:8px; font-weight:600;}
 
@@ -469,6 +470,15 @@
     list.push(report);
     await storeSet('reports:' + classId, JSON.stringify(list));
   }
+  async function loadActiveClassId(){
+    return await storeGet('active-class-id');
+  }
+  async function saveActiveClassId(classId){
+    await storeSet('active-class-id', classId);
+  }
+  async function clearActiveClassId(){
+    await storeDelete('active-class-id');
+  }
 
   /* ---------------- app state ---------------- */
   var state = {
@@ -518,6 +528,19 @@
     });
   }
 
+  function prepareRosterForUse(roster){
+    if(!roster || !roster.students) return roster;
+    roster.students.forEach(function(s, i){
+      if(typeof s.positive !== 'number') s.positive = 0;
+      if(typeof s.negative !== 'number') s.negative = 0;
+      if(!s.skills) s.skills = { songs:false, stories:false, phonics:false, blending:false };
+      if(typeof s.colorIndex !== 'number') s.colorIndex = i % paletteSize();
+      delete s.expanded;
+    });
+    if(typeof roster.negativeEnabled !== 'boolean') roster.negativeEnabled = true;
+    return roster;
+  }
+
   // Whether the shared skill-icon column is currently shown for the whole roster.
   // Transient (not persisted) -- it always starts collapsed, which keeps the
   // student-facing grid down to just name + strikes + stars by default.
@@ -545,6 +568,17 @@
     state.theme = (savedTheme === 'dark') ? 'dark' : 'light';
     document.body.setAttribute('data-theme', state.theme);
     state.classesIndex = await loadClassesIndex();
+    var activeClassId = await loadActiveClassId();
+    if(activeClassId){
+      var activeRoster = prepareRosterForUse(await loadRoster(activeClassId));
+      if(activeRoster){
+        state.currentClass = activeRoster;
+        uiSkillsVisible = false;
+        renderTracker();
+        return;
+      }
+      await clearActiveClassId();
+    }
     renderHome();
   }
 
@@ -562,6 +596,9 @@
     state.screen = 'home';
     state.editingClassId = null;
     var atLimit = state.classesIndex.length >= 15;
+    var activeSessionHtml = state.currentClass ?
+      '<button class="start-btn resume-btn" id="resumeBtn">↩ Resume ' + escapeHtml(state.currentClass.className) + '</button>'
+      : '';
 
     var cardsHtml = '';
     if(state.classesIndex.length === 0){
@@ -586,6 +623,8 @@
           '<div><h1>Class Behavior &amp; Skill Tracker</h1>' +
           '<p>Quick-tap scoring for songs, stories, phonics &amp; blending.</p></div>' +
         '</div>' +
+
+        activeSessionHtml +
 
         '<div class="field-block">' +
           '<label class="field-label" for="classNameInput">Class name</label>' +
@@ -629,6 +668,12 @@
       startBtn.addEventListener('click', function(){
         var activeAge = root.querySelector('.age-btn.active');
         startTracking(activeAge ? activeAge.getAttribute('data-age') : selectedAge);
+      });
+    }
+    var resumeBtn = document.getElementById('resumeBtn');
+    if(resumeBtn){
+      resumeBtn.addEventListener('click', function(){
+        renderTracker();
       });
     }
 
@@ -688,21 +733,13 @@
     state.editingClassId = null;
     uiSkillsVisible = false;
     state.currentClass = classObj;
+    await saveActiveClassId(id);
     renderTracker();
   }
 
   async function loadClassIntoForm(id){
-    var roster = await loadRoster(id);
+    var roster = prepareRosterForUse(await loadRoster(id));
     if(!roster){ showToast('Could not load that class.'); return; }
-    // backfill fields for safety (covers rosters saved by an older app version)
-    roster.students.forEach(function(s, i){
-      if(typeof s.positive !== 'number') s.positive = 0;
-      if(typeof s.negative !== 'number') s.negative = 0;
-      if(!s.skills) s.skills = { songs:false, stories:false, phonics:false, blending:false };
-      if(typeof s.colorIndex !== 'number') s.colorIndex = i % paletteSize();
-      delete s.expanded;
-    });
-    if(typeof roster.negativeEnabled !== 'boolean') roster.negativeEnabled = true;
 
     state.editingClassId = id;
     var nameInput = document.getElementById('classNameInput');
@@ -728,6 +765,10 @@
     var entry = state.classesIndex.find(function(c){ return c.id === id; });
     var label = entry ? entry.className : 'this class';
     if(!window.confirm('Delete "' + label + '" and all of its saved data? This cannot be undone.')) return;
+    if(state.currentClass && state.currentClass.id === id) state.currentClass = null;
+    loadActiveClassId().then(function(activeId){
+      if(activeId === id) clearActiveClassId();
+    });
     state.classesIndex = state.classesIndex.filter(function(c){ return c.id !== id; });
     saveClassesIndex(state.classesIndex);
     deleteClassData(id);
@@ -738,12 +779,14 @@
      TRACKER SCREEN
      ========================================================= */
   function goHome(){
-    state.currentClass = null;
     renderHome();
   }
 
   function persistCurrent(){
-    if(state.currentClass) saveRoster(state.currentClass.id, state.currentClass);
+    if(state.currentClass){
+      saveRoster(state.currentClass.id, state.currentClass);
+      saveActiveClassId(state.currentClass.id);
+    }
   }
 
   function renderTracker(){
@@ -1162,8 +1205,10 @@
       s.positive = 0; s.negative = 0;
       s.skills = { songs:false, stories:false, phonics:false, blending:false };
     });
-    persistCurrent();
-    renderTracker();
+    await saveRoster(cls.id, cls);
+    await clearActiveClassId();
+    state.currentClass = null;
+    renderHome();
     showToast('Session archived — fresh start for next class!');
   }
 
