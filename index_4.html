@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Class Tracker</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6C4AB6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F5FB;
+    --ink:#14151F;
+    --border-color:#14151F;
+    --card-bg:#FFFFFF;
+    --card-bg-soft:#FBFAFF;
+    --ninja:#6C4AB6;
+    --ninja-deep:#4E3486;
+    --gold:#FFB627;
+    --coral:#FF5D5D;
+    --mint:#25B889;
+    --pink:#FF6FA5;
+    --muted:#8A88A3;
+    --track-line:#E7E4F6;
+    --hairline:#E1DEEE;
+    --chrome-bg:#F1F0F6;
+    --soft-shadow:#D3D0E8;
+    --emoji-scale:1;
+    --radius:16px;
+    --shadow-off:4px;
+    --font-display:'Baloo 2','Segoe UI Rounded',sans-serif;
+    --font-body:'Inter',system-ui,-apple-system,sans-serif;
+  }
+  [data-theme="dark"]{
+    --paper:#15162A;
+    --ink:#F1F0F8;
+    --border-color:#F1F0F8;
+    --card-bg:#20223D;
+    --card-bg-soft:#262848;
+    --ninja:#B6A2F2;
+    --ninja-deep:#9B87D9;
+    --gold:#FFC94A;
+    --coral:#FF7A7A;
+    --mint:#3ED2A0;
+    --pink:#FF8DBA;
+    --muted:#9997B8;
+    --track-line:#33355A;
+    --hairline:#33355A;
+    --chrome-bg:#1E2038;
+    --soft-shadow:#454875;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    overscroll-behavior:none;
+  }
+  #app{min-height:100dvh; display:flex; flex-direction:column;}
+  button{font-family:inherit; cursor:pointer;}
+  button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible{
+    outline:3px solid var(--ninja); outline-offset:2px;
+  }
+  input,textarea{font-family:inherit;}
+  .hidden{display:none !important;}
+
+  /* ---------- comic panel primitive ---------- */
+  .comic-panel{
+    background:var(--card-bg);
+    border:3px solid var(--border-color);
+    box-shadow:var(--shadow-off) var(--shadow-off) 0 var(--border-color);
+    border-radius:var(--radius);
+  }
+
+  /* ================= HOME SCREEN ================= */
+  #home-screen{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    padding:28px 16px 60px;
+  }
+  .home-inner{width:100%; max-width:640px;}
+  .home-hero{
+    display:flex; align-items:center; gap:14px; margin-bottom:22px;
+  }
+  .home-hero .mark{
+    font-size:38px; line-height:1;
+    filter:drop-shadow(2px 2px 0 var(--border-color));
+  }
+  .home-hero h1{
+    font-family:var(--font-display); font-weight:800; font-size:26px; margin:0;
+    letter-spacing:.2px;
+  }
+  .home-hero p{margin:2px 0 0; color:var(--muted); font-size:13.5px;}
+
+  .field-block{margin-bottom:16px;}
+  .field-label{
+    display:block; font-family:var(--font-display); font-weight:700; font-size:13px;
+    text-transform:uppercase; letter-spacing:.06em; color:var(--ninja); margin-bottom:6px;
+  }
+  #classNameInput, #studentNamesInput{
+    width:100%; border:3px solid var(--border-color); border-radius:12px;
+    padding:11px 13px; font-size:15px; background:var(--card-bg); color:var(--ink);
+  }
+  #studentNamesInput{min-height:130px; resize:vertical; line-height:1.5;}
+
+  .age-toggle{display:flex; gap:10px;}
+  .age-btn{
+    flex:1; padding:11px 10px; border:3px solid var(--border-color); border-radius:12px;
+    background:var(--card-bg); color:var(--ink); font-weight:700; font-size:14px;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    transition:transform .12s ease;
+  }
+  .age-btn.active{
+    background:var(--ninja); color:#fff; box-shadow:3px 3px 0 var(--border-color); transform:translate(-2px,-2px);
+  }
+
+  .start-btn{
+    width:100%; margin-top:6px; padding:14px; border:3px solid var(--border-color); border-radius:14px;
+    background:var(--gold); color:var(--ink); font-family:var(--font-display); font-weight:800; font-size:17px;
+    box-shadow:4px 4px 0 var(--border-color);
+    transition:transform .1s ease, box-shadow .1s ease;
+  }
+  .start-btn:active{transform:translate(4px,4px); box-shadow:0 0 0 var(--border-color);}
+  .start-btn:disabled{opacity:.45; cursor:not-allowed;}
+
+  .limit-note{font-size:12.5px; color:var(--coral); margin-top:8px; font-weight:600;}
+
+  .saved-heading{
+    font-family:var(--font-display); font-weight:700; font-size:15px; margin:30px 0 10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .saved-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px;
+  }
+  .class-card{
+    position:relative; padding:14px 12px 12px; text-align:left; border:3px solid var(--border-color);
+    border-radius:14px; background:var(--card-bg); box-shadow:3px 3px 0 var(--border-color);
+    transition:transform .1s ease;
+  }
+  .class-card:active{transform:translate(2px,2px); box-shadow:1px 1px 0 var(--border-color);}
+  .class-card .cc-name{font-family:var(--font-display); font-weight:700; font-size:15px; display:block; margin-bottom:4px; word-break:break-word;}
+  .class-card .cc-meta{font-size:12px; color:var(--muted); font-weight:600;}
+  .class-card .cc-del{
+    position:absolute; top:-8px; right:-8px; width:24px; height:24px; border-radius:50%;
+    background:var(--coral); color:#fff; border:2px solid var(--border-color); font-size:13px; font-weight:800;
+    display:flex; align-items:center; justify-content:center; line-height:1;
+  }
+  .empty-state{
+    padding:22px 16px; text-align:center; color:var(--muted); font-size:13.5px;
+    border:3px dashed var(--track-line); border-radius:14px;
+  }
+
+  /* ================= TRACKER SCREEN ================= */
+  #tracker-screen{flex:1; display:flex; flex-direction:column; min-height:100dvh;}
+
+  .tracker-header{
+    position:sticky; top:0; z-index:20; background:var(--paper);
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:8px 12px; height:46px; border-bottom:1px solid var(--hairline);
+  }
+  .icon-btn{
+    background:var(--chrome-bg); border:1px solid var(--hairline); border-radius:9px;
+    width:34px; height:32px; display:flex; align-items:center; justify-content:center; font-size:16px;
+    flex:none; color:var(--muted);
+  }
+  .icon-btn:active{transform:translate(1px,1px);}
+  .theme-icon{width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+  .tracker-title{
+    font-family:var(--font-display); font-weight:700; font-size:16.5px; flex:1; text-align:center;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 6px; color:var(--muted);
+  }
+  .header-actions{display:flex; gap:6px; flex:none;}
+
+  /* Teacher-only control strip: deliberately quiet/neutral so a student's eye
+     is drawn to the roster below, not to this bar. The primary row never
+     wraps -- when skills are toggled on, the bulk skill buttons drop into a
+     second accordion row underneath instead of forcing this one onto two lines. */
+  .bulk-ribbon{
+    display:flex; flex-wrap:nowrap; align-items:center; justify-content:space-between; gap:6px;
+    padding:6px 10px; border-bottom:1px solid var(--hairline); background:var(--chrome-bg);
+  }
+  .skills-subrow{
+    display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px;
+    padding:6px 10px 8px; border-bottom:1px solid var(--hairline); background:var(--chrome-bg);
+  }
+  .ribbon-group{display:flex; gap:5px; align-items:center; flex:none;}
+  .ribbon-center{display:flex; gap:6px; align-items:center; flex:none;}
+  .rbtn{
+    border:1px solid var(--hairline); border-radius:8px; background:var(--card-bg);
+    padding:5px 8px; font-size:11.5px; font-weight:600; color:var(--muted); white-space:nowrap;
+    display:flex; align-items:center; gap:4px;
+  }
+  .rbtn:active{background:var(--hairline);}
+  .rbtn.skill{padding:5px 7px; font-size:14px; color:var(--ink);}
+  .rbtn.skill.all-on{background:var(--ink); border-color:var(--ink);}
+  .rbtn.skills-vis{font-weight:700; color:var(--ink);}
+  .rbtn.skills-vis.on{background:var(--ink); color:var(--paper);}
+  .rbtn.behavior-toggle.off{color:var(--muted); font-style:italic;}
+  .ribbon-star{width:12px; height:12px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linejoin:round; flex:none;}
+
+  .main-area{flex:1; display:flex; flex-direction:column; min-height:0;}
+  /* On narrow screens there isn't room for the behavior column + full name +
+     stars + skill icons all at once. When skills are toggled open we free up
+     space by hiding the whole Bad Behavior column (face + strikes) rather
+     than letting names compress/ellipsize. Desktop has room for everything. */
+  @media(max-width:499px){
+    body.skills-open .neg-zone{display:none;}
+  }
+  @media(min-width:900px){
+    .main-area{flex-direction:row;}
+    .grid-pane{flex:2; min-width:0;}
+  }
+
+  /* End-of-class-only actions -- deliberately parked at the very bottom, out of
+     the way of the moment-to-moment tapping happening above. */
+  .footer-bar{
+    flex:none; display:flex; justify-content:center; align-items:center; gap:8px;
+    padding:8px 10px; border-top:1px solid var(--hairline); background:var(--chrome-bg);
+  }
+  .rbtn.icon-only{padding:6px 9px;}
+  .rbtn.icon-only svg{display:block;}
+
+  .grid-pane{display:flex; flex-direction:column; min-height:0; flex:1;}
+  .roster-scroll{
+    flex:1; overflow-y:auto; padding:16px 8px 18px;
+    display:flex; flex-direction:column; gap:6px;
+  }
+
+  /* The row itself stays plain/white -- only the name gets a soft pastel pill,
+     so a child scans for "my colour" around their name specifically, not a
+     whole colored bar competing with the strikes/stars for attention. */
+  .student-row{
+    display:flex; align-items:center; gap:4px;
+    height:44px; min-height:44px;
+    padding:2px 6px;
+    border-radius:12px;
+    background:var(--card-bg);
+  }
+
+  .neg-zone{display:flex; align-items:center; gap:4px; flex:none;}
+  .neg-zone.maxed{background:rgba(255,93,93,.16); border-radius:8px; padding:2px 5px 2px 3px;}
+  .face-btn{
+    font-size:calc(19px * var(--emoji-scale)); background:none; border:none; padding:0 2px; line-height:1;
+  }
+  .strikes{display:flex; gap:3px; align-items:center;}
+  .strike{
+    width:15px; height:15px; border-radius:4px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:800; color:var(--muted);
+    background:rgba(20,21,31,.07); line-height:1;
+  }
+  [data-theme="dark"] .strike{background:rgba(241,240,248,.10);}
+  .strike.filled{color:#fff; background:var(--coral);}
+  .out-tag{
+    font-size:8.5px; font-weight:800; letter-spacing:.03em; color:var(--coral);
+    margin-left:1px; white-space:nowrap;
+  }
+
+  /* Name sits centered between the strikes and the stars. Tapping it cycles
+     its pastel color -- no separate swatch button needed. */
+  .name-wrap{
+    flex:1; min-width:0; display:flex; justify-content:center; align-items:center; padding:0 2px;
+  }
+  .name-pill{
+    font-family:var(--font-display); font-weight:700;
+    font-size:calc(16px * var(--emoji-scale)); color:var(--ink);
+    max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    padding:5px 14px; border-radius:999px; border:none;
+    background:var(--pill-color, var(--card-bg-soft));
+  }
+
+  /* Stars: 5-wide, custom SVG icon (not emoji) styled to match the celebration
+     cards -- rounded points, soft offset shadow (lighter than the border, not
+     black). Sized to match the smiley face; spacing trimmed to fit more on screen. */
+  .star-zone{display:flex; justify-content:flex-end; gap:0; align-items:center; flex:none;}
+  .star-slot{
+    position:relative; width:27px; height:30px; display:flex; align-items:center; justify-content:center;
+    background:none; border:none; padding:0; opacity:.32;
+  }
+  .star-slot.filled{opacity:1;}
+  .star-svg{width:100%; height:100%; display:block; overflow:visible;}
+  .star-shadow{fill:var(--soft-shadow); stroke:var(--soft-shadow); stroke-width:2.2; stroke-linejoin:round;}
+  .star-fill{fill:var(--muted); stroke:var(--border-color); stroke-width:2; stroke-linejoin:round; stroke-linecap:round;}
+  .star-slot.filled .star-fill{fill:var(--gold); stroke-width:1.5;}
+  .star-slot.badge{opacity:1; transform:scale(1.05); font-weight:800; font-size:14px;
+    color:#fff; background:var(--gold); border-radius:50%; width:27px; height:27px;
+    border:1.5px solid rgba(0,0,0,.25);}
+
+  /* Skill icons: hidden by default everywhere. A single global ribbon toggle
+     (not a per-row control) reveals this column for the whole roster at once. */
+  .skill-zone{display:flex; align-items:center; justify-content:flex-end; gap:4px; flex:none;}
+  .skill-chip{
+    font-size:15px; background:none; border:none; opacity:.20; padding:2px; line-height:1;
+  }
+  .skill-chip.on{opacity:1;}
+
+  /* ================= ACHIEVEMENT CARDS ================= */
+  /* Minimal by design -- no title, no icon header, no background pattern.
+     A plain full-width strip that only shows the cards themselves, so the
+     card is the one visually striking thing here. */
+  .celebration-pane{
+    background:var(--card-bg);
+    border-top:1px solid var(--hairline);
+    padding:0 8px;
+  }
+  .celebration-pane:empty{padding:0; border-top:none;}
+  .cel-toggle{
+    display:block; width:100%; text-align:center; background:none; border:none;
+    padding:7px 0; font-size:10.5px; font-weight:700; letter-spacing:.04em;
+    text-transform:uppercase; color:var(--muted);
+  }
+  .ach-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-bottom:8px;
+  }
+  .ach-card{
+    display:flex; align-items:center; gap:9px;
+    padding:8px 9px; border:2px solid var(--hairline); border-radius:12px;
+    background:var(--card-bg); box-shadow:3px 3px 0 var(--soft-shadow);
+  }
+  .ach-icon{font-size:38px; flex:none; line-height:1;}
+  .ach-body{min-width:0;}
+  .ach-body .ach-title{font-family:var(--font-display); font-weight:800; font-size:11.5px; margin:0 0 2px; color:var(--ink);}
+  .ach-body .ach-list{font-size:10.5px; line-height:1.4; color:var(--ink); font-weight:600;}
+
+  /* ================= REWARDS MODAL ================= */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(20,21,31,.5);
+    display:flex; align-items:center; justify-content:center; padding:18px; z-index:200;
+  }
+  .modal-card{
+    background:var(--card-bg); border-radius:16px; width:100%; max-width:340px;
+    max-height:78vh; overflow-y:auto; padding:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  .modal-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
+  .modal-title{font-family:var(--font-display); font-weight:800; font-size:16px; color:var(--ink);}
+  .modal-close{background:none; border:none; font-size:15px; color:var(--muted); padding:4px 6px;}
+  .reward-row{
+    display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+    padding:9px 0; border-bottom:1px solid var(--hairline); font-size:13px;
+  }
+  .reward-row:last-child{border-bottom:none;}
+  .reward-name{font-family:var(--font-display); font-weight:700; color:var(--ink); flex:none;}
+  .reward-value{color:var(--muted); font-weight:600; text-align:right;}
+  .reward-empty{color:var(--muted); font-size:12.5px; text-align:center; padding:20px 0;}
+
+  .toast{
+    position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
+    background:var(--ink); color:var(--paper); padding:10px 18px; border-radius:30px;
+    font-size:13px; font-weight:600; z-index:99; box-shadow:0 4px 14px rgba(0,0,0,.25);
+  }
+</style>
+</head>
+<body data-theme="light">
+<div id="app"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- utilities ---------------- */
+  function uid(prefix){
+    return (prefix||'id') + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
+  }
+  function todayISO(){
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+  /* Vibrant "rainbow" assigned per student row, cycling in order. Punchier
+     than plain pastel so each name-pill reads clearly at a glance. */
+  var PASTELS_LIGHT = [
+    { bg:'#FFB3AA', swatch:'#FF9E98' },
+    { bg:'#FFC98A', swatch:'#FFB86B' },
+    { bg:'#F3E066', swatch:'#F0D24A' },
+    { bg:'#A9E39B', swatch:'#79CC81' },
+    { bg:'#98D3F5', swatch:'#6FB6EA' },
+    { bg:'#CBAFF2', swatch:'#AF95EA' }
+  ];
+  var PASTELS_DARK = [
+    { bg:'#5C2E3D', swatch:'#E27D7D' },
+    { bg:'#5C4522', swatch:'#DDA85A' },
+    { bg:'#585322', swatch:'#D3C34C' },
+    { bg:'#294A26', swatch:'#5FBE6C' },
+    { bg:'#234A66', swatch:'#5FA8DE' },
+    { bg:'#42308A', swatch:'#9C7EE0' }
+  ];
+  function getPalette(){
+    return document.body.getAttribute('data-theme') === 'dark' ? PASTELS_DARK : PASTELS_LIGHT;
+  }
+  function paletteSize(){ return PASTELS_LIGHT.length; }
+
+  /* ---------------- storage layer ----------------
+     Prefers window.storage (available inside the Claude artifact preview).
+     Falls back to real localStorage when that API isn't present -- e.g. once
+     this file is deployed/opened as a standalone PWA outside the preview --
+     so classes actually persist in both contexts instead of silently no-oping. */
+  var storageAvailable = (typeof window.storage !== 'undefined');
+  var LS_PREFIX = 'classTracker::';
+
+  async function storeGet(key){
+    if(storageAvailable){
+      try{
+        var res = await window.storage.get(key, false);
+        return res ? res.value : null;
+      }catch(e){ /* fall through to localStorage */ }
+    }
+    try{ return window.localStorage.getItem(LS_PREFIX + key); }catch(e){ return null; }
+  }
+  async function storeSet(key, value){
+    if(storageAvailable){
+      try{
+        var res = await window.storage.set(key, value, false);
+        if(res) return true;
+      }catch(e){ /* fall through to localStorage */ }
+    }
+    try{ window.localStorage.setItem(LS_PREFIX + key, value); return true; }catch(e){ return false; }
+  }
+  async function storeDelete(key){
+    if(storageAvailable){
+      try{ await window.storage.delete(key, false); }catch(e){ /* ignore */ }
+    }
+    try{ window.localStorage.removeItem(LS_PREFIX + key); }catch(e){ /* ignore */ }
+    return true;
+  }
+
+  async function loadClassesIndex(){
+    var raw = await storeGet('classes-index');
+    if(!raw) return [];
+    try{ return JSON.parse(raw); }catch(e){ return []; }
+  }
+  async function saveClassesIndex(list){
+    await storeSet('classes-index', JSON.stringify(list));
+  }
+  async function loadRoster(classId){
+    var raw = await storeGet('class-roster:' + classId);
+    if(!raw) return null;
+    try{ return JSON.parse(raw); }catch(e){ return null; }
+  }
+  async function saveRoster(classId, roster){
+    await storeSet('class-roster:' + classId, JSON.stringify(roster));
+  }
+  async function deleteClassData(classId){
+    await storeDelete('class-roster:' + classId);
+    await storeDelete('reports:' + classId);
+  }
+  async function loadReports(classId){
+    var raw = await storeGet('reports:' + classId);
+    if(!raw) return [];
+    try{ return JSON.parse(raw); }catch(e){ return []; }
+  }
+  async function appendReport(classId, report){
+    var list = await loadReports(classId);
+    list.push(report);
+    await storeSet('reports:' + classId, JSON.stringify(list));
+  }
+
+  /* ---------------- app state ---------------- */
+  var state = {
+    screen: 'home',
+    theme: 'light',
+    classesIndex: [],
+    currentClass: null   // { id, className, ageGroup, students:[...] }
+  };
+
+  var root = document.getElementById('app');
+
+  function makeStudent(name, index){
+    return {
+      id: uid('stu'),
+      name: name,
+      positive: 0,
+      negative: 0,
+      colorIndex: (index || 0) % paletteSize(),
+      skills: { songs:false, stories:false, phonics:false, blending:false }
+    };
+  }
+
+  // Whether the shared skill-icon column is currently shown for the whole roster.
+  // Transient (not persisted) -- it always starts collapsed, which keeps the
+  // student-facing grid down to just name + strikes + stars by default.
+  var uiSkillsVisible = false;
+
+  // Whether the achievements strip is collapsed. Transient, starts expanded.
+  var uiCelebrationCollapsed = false;
+
+  /* ---------------- toast ---------------- */
+  var toastTimer = null;
+  function showToast(msg){
+    var el = document.querySelector('.toast');
+    if(el) el.remove();
+    el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg;
+    document.body.appendChild(el);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.remove(); }, 2200);
+  }
+
+  /* ---------------- init ---------------- */
+  async function init(){
+    var savedTheme = await storeGet('ui-theme');
+    state.theme = (savedTheme === 'dark') ? 'dark' : 'light';
+    document.body.setAttribute('data-theme', state.theme);
+    state.classesIndex = await loadClassesIndex();
+    renderHome();
+  }
+
+  function toggleTheme(){
+    state.theme = (state.theme === 'light') ? 'dark' : 'light';
+    document.body.setAttribute('data-theme', state.theme);
+    storeSet('ui-theme', state.theme);
+    if(state.screen === 'tracker') renderTracker(); else renderHome();
+  }
+
+  /* =========================================================
+     HOME SCREEN
+     ========================================================= */
+  function renderHome(){
+    state.screen = 'home';
+    var atLimit = state.classesIndex.length >= 15;
+
+    var cardsHtml = '';
+    if(state.classesIndex.length === 0){
+      cardsHtml = '<div class="empty-state">No saved classes yet...</div>';
+    } else {
+      cardsHtml = '<div class="saved-grid">' + state.classesIndex.map(function(c){
+        var emoji = c.ageGroup === 'kindergarten' ? '🧸' : '🎒';
+        return '' +
+        '<button class="class-card" data-open="' + c.id + '">' +
+          '<span class="cc-del" data-del="' + c.id + '" title="Delete class">✕</span>' +
+          '<span class="cc-name">' + emoji + ' ' + escapeHtml(c.className) + '</span>' +
+          '<span class="cc-meta">' + c.studentCount + ' students</span>' +
+        '</button>';
+      }).join('') + '</div>';
+    }
+
+    root.innerHTML =
+    '<div id="home-screen">' +
+      '<div class="home-inner">' +
+        '<div class="home-hero">' +
+          '<span class="mark">🐱‍👤</span>' +
+          '<div><h1>Class Behavior &amp; Skill Tracker</h1>' +
+        '</div>' +
+
+        '<div class="field-block">' +
+          '<label class="field-label" for="classNameInput">Class name</label>' +
+          '<input id="classNameInput" type="text" placeholder="e.g. Kindergarten - Section A" maxlength="60">' +
+        '</div>' +
+
+        '<div class="field-block">' +
+          '<label class="field-label" for="studentNamesInput">Student names (one per line)</label>' +
+          '<textarea id="studentNamesInput" placeholder="Alex Johnson&#10;Ben Smith&#10;Chloe Davis"></textarea>' +
+        '</div>' +
+
+        '<div class="field-block">' +
+          '<label class="field-label">Age bracket</label>' +
+          '<div class="age-toggle">' +
+            '<button class="age-btn active" data-age="kindergarten">🧸 Kindergarten</button>' +
+            '<button class="age-btn" data-age="older">🎒 Older Class</button>' +
+          '</div>' +
+        '</div>' +
+
+        '<button class="start-btn" id="startBtn"' + (atLimit ? ' disabled' : '') + '>🚀 Start Tracking</button>' +
+        (atLimit ? '<div class="limit-note">You\'ve reached the 15 saved class limit — delete one below to add a new class.</div>' : '') +
+
+        '<div class="saved-heading">📚 Saved Classes</div>' +
+        cardsHtml +
+      '</div>' +
+    '</div>';
+
+    // age toggle behavior
+    var ageBtns = root.querySelectorAll('.age-btn');
+    var selectedAge = 'kindergarten';
+    ageBtns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        ageBtns.forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        selectedAge = btn.getAttribute('data-age');
+      });
+    });
+
+    var startBtn = document.getElementById('startBtn');
+    if(startBtn){
+      startBtn.addEventListener('click', function(){
+        startTracking(selectedAge);
+      });
+    }
+
+    root.querySelectorAll('[data-open]').forEach(function(el){
+      el.addEventListener('click', function(e){
+        if(e.target.closest('[data-del]')) return;
+        openClass(el.getAttribute('data-open'));
+      });
+    });
+    root.querySelectorAll('[data-del]').forEach(function(el){
+      el.addEventListener('click', function(e){
+        e.stopPropagation();
+        confirmDeleteClass(el.getAttribute('data-del'));
+      });
+    });
+  }
+
+  async function startTracking(ageGroup){
+    var nameInput = document.getElementById('classNameInput');
+    var namesArea = document.getElementById('studentNamesInput');
+    var className = nameInput.value.trim();
+    var rawNames = namesArea.value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
+
+    if(!className){ showToast('Give the class a name first.'); nameInput.focus(); return; }
+    if(rawNames.length === 0){ showToast('Paste at least one student name.'); namesArea.focus(); return; }
+    if(state.classesIndex.length >= 15){ showToast('15 class limit reached — delete one first.'); return; }
+
+    var id = uid('cls');
+    var students = rawNames.map(function(n, i){ return makeStudent(n, i); });
+    var classObj = { id: id, className: className, ageGroup: ageGroup, students: students, negativeEnabled: true };
+
+    await saveRoster(id, classObj);
+    state.classesIndex.push({ id:id, className:className, ageGroup:ageGroup, studentCount:students.length, dateCreated:new Date().toISOString() });
+    await saveClassesIndex(state.classesIndex);
+
+    uiSkillsVisible = false;
+    state.currentClass = classObj;
+    renderTracker();
+  }
+
+  async function openClass(id){
+    var roster = await loadRoster(id);
+    if(!roster){ showToast('Could not load that class.'); return; }
+    // backfill fields for safety (covers rosters saved by an older app version)
+    roster.students.forEach(function(s, i){
+      if(typeof s.positive !== 'number') s.positive = 0;
+      if(typeof s.negative !== 'number') s.negative = 0;
+      if(!s.skills) s.skills = { songs:false, stories:false, phonics:false, blending:false };
+      if(typeof s.colorIndex !== 'number') s.colorIndex = i % paletteSize();
+      delete s.expanded;
+    });
+    if(typeof roster.negativeEnabled !== 'boolean') roster.negativeEnabled = true;
+    uiSkillsVisible = false;
+    state.currentClass = roster;
+    renderTracker();
+  }
+
+  function confirmDeleteClass(id){
+    var entry = state.classesIndex.find(function(c){ return c.id === id; });
+    var label = entry ? entry.className : 'this class';
+    if(!window.confirm('Delete "' + label + '" and all of its saved data? This cannot be undone.')) return;
+    state.classesIndex = state.classesIndex.filter(function(c){ return c.id !== id; });
+    saveClassesIndex(state.classesIndex);
+    deleteClassData(id);
+    renderHome();
+  }
+
+  /* =========================================================
+     TRACKER SCREEN
+     ========================================================= */
+  function goHome(){
+    state.currentClass = null;
+    renderHome();
+  }
+
+  function persistCurrent(){
+    if(state.currentClass) saveRoster(state.currentClass.id, state.currentClass);
+  }
+
+  function renderTracker(){
+    state.screen = 'tracker';
+    var cls = state.currentClass;
+    document.body.classList.toggle('age-kg', cls.ageGroup === 'kindergarten');
+    document.body.style.setProperty('--emoji-scale', cls.ageGroup === 'kindergarten' ? '1.08' : '0.94');
+    document.body.classList.toggle('skills-open', uiSkillsVisible);
+
+    if(typeof cls.negativeEnabled !== 'boolean') cls.negativeEnabled = true;
+
+    var SUN_ICON = '<svg class="theme-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4" y1="12" x2="2" y2="12"></line><line x1="22" y1="12" x2="20" y2="12"></line><line x1="4.9" y1="4.9" x2="3.5" y2="3.5"></line><line x1="20.5" y1="20.5" x2="19.1" y2="19.1"></line><line x1="4.9" y1="19.1" x2="3.5" y2="20.5"></line><line x1="20.5" y1="3.5" x2="19.1" y2="4.9"></line></svg>';
+    var MOON_ICON = '<svg class="theme-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path></svg>';
+    var STAR_OUTLINE = '<svg class="ribbon-star" viewBox="0 0 26 26"><use href="#starPath"></use></svg>';
+
+    var rowsHtml = cls.students.map(function(s){ return rowTemplate(s, cls.negativeEnabled); }).join('');
+
+    root.innerHTML =
+    '<div id="tracker-screen">' +
+      '<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">' +
+        '<defs><path id="starPath" d="M12 2 L14.9 8.6 L22 9.3 L16.8 14.1 L18.2 21 L12 17.4 L5.8 21 L7.2 14.1 L2 9.3 L9.1 8.6 Z"></path></defs>' +
+      '</svg>' +
+      '<div class="tracker-header">' +
+        '<button class="icon-btn" id="backBtn" title="Back">←</button>' +
+        '<div class="tracker-title">' + escapeHtml(cls.className) + '</div>' +
+        '<div class="header-actions">' +
+          '<button class="icon-btn" id="themeBtn" title="Toggle theme">' + (state.theme==='light' ? MOON_ICON : SUN_ICON) + '</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="bulk-ribbon">' +
+        (cls.negativeEnabled ?
+          '<div class="ribbon-group">' +
+            '<button class="rbtn" data-bulk="neg+"> :( +1</button>' +
+            '<button class="rbtn" data-bulk="neg-"> :( −1</button>' +
+          '</div>'
+        : '<div class="ribbon-group"></div>') +
+        '<div class="ribbon-center">' +
+          '<button class="rbtn skills-vis' + (uiSkillsVisible ? ' on' : '') + '" id="toggleSkillsBtn">Toggle Skills</button>' +
+          '<button class="rbtn behavior-toggle' + (cls.negativeEnabled ? '' : ' off') + '" id="toggleBehaviorBtn" title="Permanently show/hide negative behavior tracking for this class">' +
+            (cls.negativeEnabled ? 'Behavior: On' : 'Behavior: Off') +
+          '</button>' +
+        '</div>' +
+        '<div class="ribbon-group">' +
+          '<button class="rbtn" data-bulk="pos+">' + STAR_OUTLINE + ' +1</button>' +
+          '<button class="rbtn" data-bulk="pos-">' + STAR_OUTLINE + ' −1</button>' +
+        '</div>' +
+      '</div>' +
+
+      (uiSkillsVisible ?
+        '<div class="skills-subrow">' +
+          '<button class="rbtn skill" data-bulk-skill="songs" title="Set Songs &amp; Chants for everyone">🎵</button>' +
+          '<button class="rbtn skill" data-bulk-skill="stories" title="Set Stories &amp; Chants for everyone">📖</button>' +
+          '<button class="rbtn skill" data-bulk-skill="phonics" title="Set Phonics for everyone">🔤</button>' +
+          '<button class="rbtn skill" data-bulk-skill="blending" title="Set Blending for everyone">🗣️</button>' +
+        '</div>'
+      : '') +
+
+      '<div class="main-area">' +
+        '<div class="grid-pane">' +
+          '<div class="roster-scroll" id="rosterScroll">' + rowsHtml + '</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="celebration-pane" id="celebrationPane"></div>' +
+
+      '<div class="footer-bar">' +
+        '<button class="rbtn" id="exportBtn">Export CSV</button>' +
+        '<button class="rbtn" id="rewardsBtn">Rewards</button>' +
+        '<button class="rbtn icon-only" id="endClassBtn" title="End Class">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+            '<circle cx="12" cy="12" r="9"></circle>' +
+            '<rect x="8.5" y="8.5" width="7" height="7" rx="1" fill="currentColor" stroke="none"></rect>' +
+          '</svg>' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+
+    document.getElementById('backBtn').addEventListener('click', goHome);
+    document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+    document.getElementById('exportBtn').addEventListener('click', exportCsv);
+    document.getElementById('endClassBtn').addEventListener('click', endClass);
+    document.getElementById('rewardsBtn').addEventListener('click', toggleRewardsModal);
+    document.getElementById('toggleSkillsBtn').addEventListener('click', function(){
+      uiSkillsVisible = !uiSkillsVisible;
+      renderTracker();
+    });
+    document.getElementById('toggleBehaviorBtn').addEventListener('click', function(){
+      cls.negativeEnabled = !cls.negativeEnabled;
+      persistCurrent();
+      renderTracker();
+    });
+
+    root.querySelectorAll('[data-bulk]').forEach(function(btn){
+      btn.addEventListener('click', function(){ applyBulk(btn.getAttribute('data-bulk')); });
+    });
+    root.querySelectorAll('[data-bulk-skill]').forEach(function(btn){
+      btn.addEventListener('click', function(){ applyBulkSkill(btn.getAttribute('data-bulk-skill')); });
+    });
+
+    wireRosterEvents();
+    updateSkillButtonStates();
+    renderCelebration();
+  }
+
+  function rowTemplate(s, negativeEnabled){
+    var faces = ['😊','😐','🙁','😢'];
+    var face = faces[clamp(s.negative,0,3)];
+    var maxedOut = s.negative >= 3;
+
+    var strikesHtml = [0,1,2].map(function(i){
+      return '<span class="strike' + (i < s.negative ? ' filled' : '') + '">✕</span>';
+    }).join('');
+
+    var negZoneHtml = negativeEnabled ?
+      '<div class="neg-zone' + (maxedOut ? ' maxed' : '') + '">' +
+        '<button class="face-btn" data-face="' + s.id + '" title="Tap for a behavior mark">' + face + '</button>' +
+        '<div class="strikes" data-dots="' + s.id + '" title="Tap a mark to remove it">' + strikesHtml + '</div>' +
+        (maxedOut ? '<span class="out-tag">OUT</span>' : '') +
+      '</div>'
+    : '';
+
+    // 5-wide star row: 0-4 shown as plain stars; 5+ collapses the last slot
+    // into a number badge so the row width never grows.
+    var STAR_ICON_SVG = '<svg class="star-svg" viewBox="0 0 26 26"><use href="#starPath" class="star-shadow" x="2" y="2"></use><use href="#starPath" class="star-fill"></use></svg>';
+    var starsHtml;
+    if(s.positive < 5){
+      starsHtml = [0,1,2,3,4].map(function(i){
+        return '<button class="star-slot' + (s.positive > i ? ' filled' : '') + '" data-star="' + i + '" data-stu="' + s.id + '">' + STAR_ICON_SVG + '</button>';
+      }).join('');
+    } else {
+      starsHtml = [0,1,2,3].map(function(i){
+        return '<button class="star-slot filled" data-star="' + i + '" data-stu="' + s.id + '">' + STAR_ICON_SVG + '</button>';
+      }).join('') +
+      '<button class="star-slot badge" data-star="4" data-stu="' + s.id + '">' + (s.positive > 99 ? '99+' : s.positive) + '</button>';
+    }
+
+    var skillZoneHtml = '';
+    if(uiSkillsVisible){
+      var skillDefs = [
+        {k:'songs', icon:'🎵'}, {k:'stories', icon:'📖'}, {k:'phonics', icon:'🔤'}, {k:'blending', icon:'🗣️'}
+      ];
+      var skillsHtml = skillDefs.map(function(d){
+        return '<button class="skill-chip' + (s.skills[d.k] ? ' on' : '') + '" data-skill="' + d.k + '" data-stu="' + s.id + '">' + d.icon + '</button>';
+      }).join('');
+      skillZoneHtml = '<div class="skill-zone">' + skillsHtml + '</div>';
+    }
+
+    var palette = getPalette();
+    var colorIndex = (s.colorIndex || 0) % palette.length;
+    var pillColor = palette[colorIndex];
+    var pillStyle = 'style="--pill-color:' + pillColor.bg + ';"';
+
+    return '' +
+    '<div class="student-row" data-row="' + s.id + '">' +
+      negZoneHtml +
+      '<div class="name-wrap">' +
+        '<button class="name-pill" data-namecolor="' + s.id + '" ' + pillStyle + ' title="Tap to change color">' + escapeHtml(s.name) + '</button>' +
+      '</div>' +
+      '<div class="star-zone">' + starsHtml + '</div>' +
+      skillZoneHtml +
+    '</div>';
+  }
+
+  function findStudent(id){
+    return state.currentClass.students.find(function(s){ return s.id === id; });
+  }
+
+  function wireRosterEvents(){
+    var scroll = document.getElementById('rosterScroll');
+    scroll.addEventListener('click', function(e){
+      var faceBtn = e.target.closest('[data-face]');
+      if(faceBtn){
+        var s1 = findStudent(faceBtn.getAttribute('data-face'));
+        s1.negative = clamp(s1.negative + 1, 0, 3);
+        afterStudentChange();
+        return;
+      }
+      var dots = e.target.closest('[data-dots]');
+      if(dots){
+        var s2 = findStudent(dots.getAttribute('data-dots'));
+        s2.negative = clamp(s2.negative - 1, 0, 3);
+        afterStudentChange();
+        return;
+      }
+      var star = e.target.closest('[data-star]');
+      if(star){
+        var s3 = findStudent(star.getAttribute('data-stu'));
+        var idx = Number(star.getAttribute('data-star'));
+        if(idx === 4){ s3.positive = s3.positive + 1; }
+        else { s3.positive = clamp(s3.positive - 1, 0, 999999); }
+        afterStudentChange();
+        return;
+      }
+      var chip = e.target.closest('[data-skill]');
+      if(chip){
+        var s4 = findStudent(chip.getAttribute('data-stu'));
+        var key = chip.getAttribute('data-skill');
+        s4.skills[key] = !s4.skills[key];
+        afterStudentChange();
+        return;
+      }
+      var namePill = e.target.closest('[data-namecolor]');
+      if(namePill){
+        var s5 = findStudent(namePill.getAttribute('data-namecolor'));
+        var size = paletteSize();
+        s5.colorIndex = ((s5.colorIndex || 0) + 1) % size;
+        afterStudentChange();
+        return;
+      }
+    });
+  }
+
+  function afterStudentChange(){
+    persistCurrent();
+    refreshRosterOnly();
+    renderCelebration();
+  }
+
+  // Re-render just the row contents (keeps scroll position) without a full screen rebuild
+  function refreshRosterOnly(){
+    var scroll = document.getElementById('rosterScroll');
+    var scrollTop = scroll.scrollTop;
+    var negativeEnabled = state.currentClass.negativeEnabled;
+    scroll.innerHTML = state.currentClass.students.map(function(s){ return rowTemplate(s, negativeEnabled); }).join('');
+    scroll.scrollTop = scrollTop;
+    updateSkillButtonStates();
+  }
+
+  function applyBulk(action){
+    state.currentClass.students.forEach(function(s){
+      if(action === 'neg+') s.negative = clamp(s.negative + 1, 0, 3);
+      if(action === 'neg-') s.negative = clamp(s.negative - 1, 0, 3);
+      if(action === 'pos+') s.positive = s.positive + 1;
+      if(action === 'pos-') s.positive = clamp(s.positive - 1, 0, 999999);
+    });
+    afterStudentChange();
+  }
+
+  function applyBulkSkill(key){
+    var students = state.currentClass.students;
+    var anyOff = students.some(function(s){ return !s.skills[key]; });
+    students.forEach(function(s){ s.skills[key] = anyOff; });
+    afterStudentChange();
+  }
+
+  function updateSkillButtonStates(){
+    var students = state.currentClass.students;
+    ['songs','stories','phonics','blending'].forEach(function(key){
+      var btn = document.querySelector('[data-bulk-skill="' + key + '"]');
+      if(!btn) return;
+      var allOn = students.length > 0 && students.every(function(s){ return s.skills[key]; });
+      btn.classList.toggle('all-on', allOn);
+    });
+  }
+
+  /* ---------------- celebration board ---------------- */
+  var STAR_MILESTONE = 5;
+
+  function renderCelebration(){
+    var pane = document.getElementById('celebrationPane');
+    if(!pane) return;
+    var students = state.currentClass.students;
+
+    // Star Ninja is a milestone, not a ranking -- everyone who reaches the
+    // star target earns it, shown alongside their current count.
+    var starNinjas = students.filter(function(s){ return s.positive >= STAR_MILESTONE; })
+      .map(function(s){ return escapeHtml(s.name) + ': ' + s.positive; });
+
+    var singStars = students.filter(function(s){ return s.skills.songs; }).map(function(s){ return s.name; });
+    var storyTellers = students.filter(function(s){ return s.skills.stories; }).map(function(s){ return s.name; });
+    var phonicsBosses = students.filter(function(s){ return s.skills.phonics; }).map(function(s){ return s.name; });
+    var blendingKings = students.filter(function(s){ return s.skills.blending; }).map(function(s){ return s.name; });
+
+    function achCard(icon, title, names){
+      if(!names.length) return '';
+      return '' +
+      '<div class="ach-card">' +
+        '<span class="ach-icon">' + icon + '</span>' +
+        '<div class="ach-body">' +
+          '<div class="ach-title">' + title + '</div>' +
+          '<div class="ach-list">' + names.join(', ') + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    var cards =
+      achCard('🌟', 'Star Ninja', starNinjas) +
+      achCard('🎵', 'Sing Star', singStars.map(escapeHtml)) +
+      achCard('📖', 'Story Teller', storyTellers.map(escapeHtml)) +
+      achCard('🔤', 'Phonics Boss', phonicsBosses.map(escapeHtml)) +
+      achCard('🗣️', 'Blending King', blendingKings.map(escapeHtml));
+
+    if(!cards){ pane.innerHTML = ''; return; }
+
+    pane.innerHTML =
+      '<button class="cel-toggle" id="toggleCelebrationBtn">' +
+        (uiCelebrationCollapsed ? '▸ Achievements' : '▾ Achievements') +
+      '</button>' +
+      (uiCelebrationCollapsed ? '' : '<div class="ach-grid">' + cards + '</div>');
+
+    document.getElementById('toggleCelebrationBtn').addEventListener('click', function(){
+      uiCelebrationCollapsed = !uiCelebrationCollapsed;
+      renderCelebration();
+    });
+  }
+
+  /* ---------------- rewards ---------------- */
+  // One stamp per positive action, except every full group of 5 stars
+  // converts into 1 sticker + 1 stamp (instead of 5 stamps), so a student
+  // never gets both the full stamp value and the sticker for those stars.
+  // Negative marks subtract stamps (never stickers), floored at 0.
+  function computeReward(s){
+    var stickers = Math.floor(s.positive / STAR_MILESTONE);
+    var leftoverStars = s.positive % STAR_MILESTONE;
+    var starStamps = stickers + leftoverStars;
+    var skillCount = ['songs','stories','phonics','blending'].filter(function(k){ return s.skills[k]; }).length;
+    var stamps = Math.max(0, starStamps + skillCount - s.negative);
+    return { stickers: stickers, stamps: stamps };
+  }
+  function formatReward(r){
+    var parts = [];
+    if(r.stickers > 0) parts.push(r.stickers + (r.stickers === 1 ? ' sticker' : ' stickers'));
+    if(r.stamps > 0) parts.push(r.stamps + (r.stamps === 1 ? ' stamp' : ' stamps'));
+    return parts.length ? parts.join(' and ') : 'No reward yet';
+  }
+  function toggleRewardsModal(){
+    if(document.getElementById('rewardsOverlay')){ closeRewardsModal(); return; }
+    var cls = state.currentClass;
+    var rowsHtml = cls.students.map(function(s){
+      return '<div class="reward-row"><span class="reward-name">' + escapeHtml(s.name) + '</span>' +
+        '<span class="reward-value">' + formatReward(computeReward(s)) + '</span></div>';
+    }).join('');
+    if(!rowsHtml) rowsHtml = '<div class="reward-empty">No students yet.</div>';
+
+    var overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.id = 'rewardsOverlay';
+    overlay.innerHTML =
+      '<div class="modal-card">' +
+        '<div class="modal-header">' +
+          '<div class="modal-title">🎁 Rewards</div>' +
+          '<button class="modal-close" id="rewardsCloseBtn">✕</button>' +
+        '</div>' +
+        '<div class="modal-body">' + rowsHtml + '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    document.getElementById('rewardsCloseBtn').addEventListener('click', closeRewardsModal);
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) closeRewardsModal(); });
+  }
+  function closeRewardsModal(){
+    var el = document.getElementById('rewardsOverlay');
+    if(el) el.remove();
+  }
+
+  /* ---------------- CSV export ---------------- */
+  function exportCsv(){
+    var cls = state.currentClass;
+    var header = ['Student Name','Positive Score','Negative Score','Songs & Chants','Stories & Chants','Phonics','Blending'];
+    var rows = cls.students.map(function(s){
+      return [
+        csvEscape(s.name), s.positive, s.negative,
+        s.skills.songs ? 'TRUE' : 'FALSE',
+        s.skills.stories ? 'TRUE' : 'FALSE',
+        s.skills.phonics ? 'TRUE' : 'FALSE',
+        s.skills.blending ? 'TRUE' : 'FALSE'
+      ].join(',');
+    });
+    var csv = header.join(',') + '\n' + rows.join('\n');
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'class_behavior_Tracker_' + todayISO() + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('CSV exported.');
+  }
+  function csvEscape(v){
+    var s = String(v);
+    if(/[",\n]/.test(s)) s = '"' + s.replace(/"/g,'""') + '"';
+    return s;
+  }
+
+  /* ---------------- end class / archive ---------------- */
+  async function endClass(){
+    var cls = state.currentClass;
+    if(!window.confirm('End this class session? Today\'s scores will be saved to history and reset to zero for next time.')) return;
+
+    var report = {
+      reportId: 'rep_' + todayISO().replace(/-/g,'') + '_' + Date.now().toString(36),
+      classId: cls.id,
+      timestamp: new Date().toISOString(),
+      studentMetrics: cls.students.map(function(s){
+        return {
+          studentName: s.name,
+          behavior: {
+            positiveStars: s.positive,
+            negativeDots: s.negative,
+            maxStarsTriggered: s.positive >= 5
+          },
+          skillsAttained: {
+            songsAndChants: s.skills.songs,
+            storiesAndChants: s.skills.stories,
+            phonics: s.skills.phonics,
+            blending: s.skills.blending
+          }
+        };
+      })
+    };
+    await appendReport(cls.id, report);
+
+    cls.students.forEach(function(s){
+      s.positive = 0; s.negative = 0;
+      s.skills = { songs:false, stories:false, phonics:false, blending:false };
+    });
+    persistCurrent();
+    renderTracker();
+    showToast('Session archived — fresh start for next class!');
+  }
+
+  /* ---------------- go ---------------- */
+  init();
+
+  // Register the service worker for offline/installable use when hosted on a real
+  // origin. Safely no-ops inside sandboxed preview environments that don't allow it.
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('./sw.js').catch(function(){ /* preview sandbox: ignore */ });
+    });
+  }
+})();
+</script>
+</body>
+</html>

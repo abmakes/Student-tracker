@@ -1,0 +1,24 @@
+{
+  "name": "Class Behavior & Skill Tracker",
+  "short_name": "Class Tracker",
+  "description": "Track student behavior, skills, and rewards in the classroom.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#F6F5FB",
+  "theme_color": "#6C4AB6",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
