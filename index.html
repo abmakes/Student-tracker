@@ -475,6 +475,7 @@
     screen: 'home',
     theme: 'light',
     classesIndex: [],
+    editingClassId: null,
     currentClass: null   // { id, className, ageGroup, students:[...] }
   };
 
@@ -489,6 +490,32 @@
       colorIndex: (index || 0) % paletteSize(),
       skills: { songs:false, stories:false, phonics:false, blending:false }
     };
+  }
+
+  function normalizeName(name){
+    return String(name || '').trim().toLowerCase();
+  }
+
+  function buildStudentsFromNames(rawNames, existingRoster){
+    var existingByName = {};
+    if(existingRoster && existingRoster.students){
+      existingRoster.students.forEach(function(s){
+        var key = normalizeName(s.name);
+        if(!existingByName[key]) existingByName[key] = [];
+        existingByName[key].push(s);
+      });
+    }
+
+    return rawNames.map(function(name, index){
+      var key = normalizeName(name);
+      var previous = existingByName[key] && existingByName[key].shift();
+      var student = makeStudent(name, index);
+      if(previous){
+        student.id = previous.id || student.id;
+        student.colorIndex = (typeof previous.colorIndex === 'number') ? previous.colorIndex : student.colorIndex;
+      }
+      return student;
+    });
   }
 
   // Whether the shared skill-icon column is currently shown for the whole roster.
@@ -533,6 +560,7 @@
      ========================================================= */
   function renderHome(){
     state.screen = 'home';
+    state.editingClassId = null;
     var atLimit = state.classesIndex.length >= 15;
 
     var cardsHtml = '';
@@ -599,14 +627,15 @@
     var startBtn = document.getElementById('startBtn');
     if(startBtn){
       startBtn.addEventListener('click', function(){
-        startTracking(selectedAge);
+        var activeAge = root.querySelector('.age-btn.active');
+        startTracking(activeAge ? activeAge.getAttribute('data-age') : selectedAge);
       });
     }
 
     root.querySelectorAll('[data-open]').forEach(function(el){
       el.addEventListener('click', function(e){
         if(e.target.closest('[data-del]')) return;
-        openClass(el.getAttribute('data-open'));
+        loadClassIntoForm(el.getAttribute('data-open'));
       });
     });
     root.querySelectorAll('[data-del]').forEach(function(el){
@@ -622,25 +651,47 @@
     var namesArea = document.getElementById('studentNamesInput');
     var className = nameInput.value.trim();
     var rawNames = namesArea.value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
+    var editingId = state.editingClassId;
 
     if(!className){ showToast('Give the class a name first.'); nameInput.focus(); return; }
     if(rawNames.length === 0){ showToast('Paste at least one student name.'); namesArea.focus(); return; }
-    if(state.classesIndex.length >= 15){ showToast('15 class limit reached — delete one first.'); return; }
+    if(!editingId && state.classesIndex.length >= 15){ showToast('15 class limit reached — delete one first.'); return; }
 
-    var id = uid('cls');
-    var students = rawNames.map(function(n, i){ return makeStudent(n, i); });
-    var classObj = { id: id, className: className, ageGroup: ageGroup, students: students, negativeEnabled: true };
+    var existingRoster = editingId ? await loadRoster(editingId) : null;
+    var id = editingId || uid('cls');
+    var students = buildStudentsFromNames(rawNames, existingRoster);
+    var classObj = {
+      id: id,
+      className: className,
+      ageGroup: ageGroup,
+      students: students,
+      negativeEnabled: existingRoster && typeof existingRoster.negativeEnabled === 'boolean' ? existingRoster.negativeEnabled : true
+    };
 
     await saveRoster(id, classObj);
-    state.classesIndex.push({ id:id, className:className, ageGroup:ageGroup, studentCount:students.length, dateCreated:new Date().toISOString() });
+    if(editingId){
+      state.classesIndex = state.classesIndex.map(function(c){
+        if(c.id !== editingId) return c;
+        return {
+          id: id,
+          className: className,
+          ageGroup: ageGroup,
+          studentCount: students.length,
+          dateCreated: c.dateCreated || new Date().toISOString()
+        };
+      });
+    } else {
+      state.classesIndex.push({ id:id, className:className, ageGroup:ageGroup, studentCount:students.length, dateCreated:new Date().toISOString() });
+    }
     await saveClassesIndex(state.classesIndex);
 
+    state.editingClassId = null;
     uiSkillsVisible = false;
     state.currentClass = classObj;
     renderTracker();
   }
 
-  async function openClass(id){
+  async function loadClassIntoForm(id){
     var roster = await loadRoster(id);
     if(!roster){ showToast('Could not load that class.'); return; }
     // backfill fields for safety (covers rosters saved by an older app version)
@@ -652,9 +703,25 @@
       delete s.expanded;
     });
     if(typeof roster.negativeEnabled !== 'boolean') roster.negativeEnabled = true;
-    uiSkillsVisible = false;
-    state.currentClass = roster;
-    renderTracker();
+
+    state.editingClassId = id;
+    var nameInput = document.getElementById('classNameInput');
+    var namesArea = document.getElementById('studentNamesInput');
+    var startBtn = document.getElementById('startBtn');
+    var ageBtns = root.querySelectorAll('.age-btn');
+
+    nameInput.value = roster.className || '';
+    namesArea.value = roster.students.map(function(s){ return s.name; }).join('\n');
+    var ageGroup = roster.ageGroup === 'older' ? 'older' : 'kindergarten';
+    ageBtns.forEach(function(btn){
+      btn.classList.toggle('active', btn.getAttribute('data-age') === ageGroup);
+    });
+    if(startBtn){
+      startBtn.disabled = false;
+      startBtn.textContent = '🚀 Start Tracking';
+    }
+    nameInput.focus();
+    showToast('Class loaded — edit the roster, then start tracking.');
   }
 
   function confirmDeleteClass(id){
