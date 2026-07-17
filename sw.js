@@ -1,4 +1,4 @@
-const CACHE_NAME = 'class-tracker-v4';
+const CACHE_NAME = 'class-tracker-v9';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (event) => {

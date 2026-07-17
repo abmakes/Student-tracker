@@ -304,6 +304,158 @@
   }
   .skill-chip.on{opacity:1;}
 
+  /* Older-class progress star + glass-fill skill gauges */
+  body.age-older .student-row{
+    height:auto; min-height:48px; padding:6px 6px; gap:8px;
+  }
+  body.age-older .name-wrap{flex:0 1 auto; max-width:28%; justify-content:flex-start;}
+  .star-zone.older-stars{
+    flex:1; min-width:0; display:flex; align-items:center; gap:8px; justify-content:flex-end;
+  }
+  .older-progress{
+    flex:1; min-width:36px; height:14px; border-radius:999px; background:var(--track-line);
+    overflow:hidden; border:1px solid var(--hairline); padding:0; cursor:pointer;
+  }
+  .older-progress > span{
+    display:block; height:100%; background:var(--gold); border-radius:999px; width:0%;
+  }
+  .older-star-badge{
+    flex:none; width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:800; font-size:13px;
+    color:var(--muted); background:rgba(20,21,31,.07);
+    border:1.5px solid var(--hairline); padding:0; line-height:1;
+  }
+  .older-star-badge.has-star{
+    color:#fff; background:var(--gold); border-color:rgba(0,0,0,.25);
+  }
+  [data-theme="dark"] .older-star-badge{background:rgba(241,240,248,.10);}
+  .older-skills-wrap{display:flex; align-items:center; gap:6px; flex:none;}
+  .skill-zone.older-skills{gap:6px; max-width:none; justify-content:flex-end;}
+  .older-gauge{
+    position:relative; width:34px; height:34px; border-radius:10px;
+    border:1px solid var(--hairline); background:var(--card-bg-soft);
+    overflow:hidden; padding:0; flex:none;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .older-gauge-fill{
+    position:absolute; left:0; right:0; bottom:0; height:33%;
+    background:rgba(108,74,182,.28); pointer-events:none;
+  }
+  .older-gauge[data-level="2"] .older-gauge-fill{height:33%; background:rgba(138,136,163,.28);}
+  .older-gauge[data-level="3"] .older-gauge-fill{height:66%; background:rgba(37,184,137,.32);}
+  .older-gauge[data-level="4"] .older-gauge-fill{height:100%; background:rgba(255,182,39,.45);}
+  .older-gauge[data-level="4"]{
+    box-shadow:0 0 0 2px rgba(255,182,39,.35), 0 0 10px rgba(255,182,39,.45);
+    border-color:var(--gold);
+  }
+  .older-gauge-face{
+    position:relative; z-index:1; font-size:15px; line-height:1;
+    filter:grayscale(.15); opacity:.85;
+  }
+  .older-gauge[data-level="4"] .older-gauge-face{filter:none; opacity:1;}
+  .older-face-chip{
+    width:34px; height:34px; border-radius:10px;
+    border:1px solid var(--hairline); background:var(--card-bg-soft);
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; line-height:1; padding:0; flex:none; opacity:.85;
+  }
+  .older-col-headers{
+    display:flex; align-items:center; gap:8px;
+    padding:4px 6px 6px; color:var(--muted);
+    font-size:9.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+    border-bottom:1px solid var(--hairline); margin:0 8px 4px;
+  }
+  .older-col-headers .och-spacer{flex:0 1 auto; max-width:28%; min-width:0;}
+  .older-col-headers .och-progress{flex:1; min-width:0;}
+  .older-col-headers .och-star{width:30px; flex:none;}
+  .older-col-headers .och-skills{
+    display:flex; align-items:center; gap:6px; flex:none;
+  }
+  .older-col-headers .och-skills span{
+    width:34px; text-align:center; flex:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .skills-subrow.older-bulk .rbtn.skill{
+    background:var(--chrome-bg); color:var(--muted); border-color:var(--hairline);
+    font-size:11px; font-weight:600; opacity:.75;
+  }
+  .skills-subrow.older-bulk .rbtn.skill:active{opacity:1; background:var(--hairline);}
+  .lms-modal-card{max-width:560px;}
+  .lms-table{width:100%; border-collapse:collapse; font-size:12px;}
+  .lms-table th,.lms-table td{
+    border-bottom:1px solid var(--hairline); padding:7px 6px; text-align:left; vertical-align:top;
+  }
+  .lms-table th{font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted);}
+  .lms-table td.score{font-weight:700; white-space:nowrap;}
+  .lms-hint{font-size:12px; color:var(--muted); margin:0 0 10px; line-height:1.4;}
+  .lms-actions{display:flex; justify-content:flex-end; gap:8px; margin-top:12px;}
+
+  /* ================= CLASS TIMER ================= */
+  .timer-overlay{
+    position:fixed; inset:0; z-index:300; background:#E8F1FB;
+    display:flex; flex-direction:column; align-items:center; justify-content:space-between;
+    padding:max(18px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+    color:#1F2A37;
+  }
+  [data-theme="dark"] .timer-overlay{background:#15162A; color:var(--ink);}
+  .timer-top{width:100%; display:flex; justify-content:space-between; align-items:center; gap:10px;}
+  .timer-close{
+    background:rgba(31,42,55,.06); border:none; border-radius:12px;
+    width:40px; height:40px; font-size:18px; color:#1F2A37; cursor:pointer;
+  }
+  [data-theme="dark"] .timer-close{background:var(--chrome-bg); color:var(--ink);}
+  .timer-presets{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:8px; width:100%; max-width:420px;
+  }
+  .timer-preset{
+    border:1.5px solid rgba(47,92,158,.28); background:rgba(255,255,255,.55);
+    color:#2F5C9E; border-radius:999px; padding:8px 14px; font-weight:700; font-size:13px;
+  }
+  .timer-preset.active{background:#2F5C9E; color:#fff; border-color:#2F5C9E;}
+  [data-theme="dark"] .timer-preset{
+    background:var(--card-bg); border-color:var(--hairline); color:var(--ninja);
+  }
+  [data-theme="dark"] .timer-preset.active{background:var(--ninja); color:var(--paper);}
+  .timer-stage{flex:1; width:100%; display:flex; align-items:center; justify-content:center; position:relative;}
+  .timer-ring-wrap{position:relative; width:min(72vw, 320px); height:min(72vw, 320px);}
+  .timer-ring{width:100%; height:100%; transform:rotate(-90deg);}
+  .timer-ring-track{fill:none; stroke:rgba(47,92,158,.16); stroke-width:6;}
+  .timer-ring-progress{fill:none; stroke:#2F5C9E; stroke-width:6; stroke-linecap:round;
+    transition:stroke-dashoffset .2s linear;}
+  [data-theme="dark"] .timer-ring-track{stroke:var(--track-line);}
+  [data-theme="dark"] .timer-ring-progress{stroke:var(--ninja);}
+  .timer-center{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    pointer-events:none;
+  }
+  .timer-time{
+    font-family:var(--font-display); font-weight:800; font-size:clamp(48px, 14vw, 72px);
+    letter-spacing:.02em; line-height:1; color:#1F2A37;
+    transform:translateY(-6px);
+  }
+  [data-theme="dark"] .timer-time{color:var(--ink);}
+  .timer-bomb{
+    position:absolute; top:18%; left:50%; transform:translateX(-50%) scale(.8);
+    font-size:42px; line-height:1; opacity:0;
+    transition:opacity .2s ease;
+  }
+  .timer-bomb.show{opacity:1; animation:bombPulse .55s ease-in-out infinite alternate;}
+  @keyframes bombPulse{
+    from{transform:translateX(-50%) scale(.92);}
+    to{transform:translateX(-50%) scale(1.18);}
+  }
+  .timer-controls{display:flex; gap:14px; width:100%; max-width:360px;}
+  .timer-ctrl{
+    flex:1; height:56px; border-radius:999px; border:2px solid #2F5C9E;
+    background:rgba(255,255,255,.55); color:#2F5C9E; display:flex;
+    align-items:center; justify-content:center; font-size:22px; cursor:pointer;
+  }
+  .timer-ctrl.primary{background:#C9DCF5; border-color:transparent;}
+  [data-theme="dark"] .timer-ctrl{
+    background:var(--card-bg); border-color:var(--ninja); color:var(--ninja);
+  }
+  [data-theme="dark"] .timer-ctrl.primary{background:var(--chrome-bg); border-color:transparent;}
+
   /* ================= ACHIEVEMENT CARDS ================= */
   /* Minimal by design -- no title, no icon header, no background pattern.
      A plain full-width strip that only shows the cards themselves, so the
@@ -491,6 +643,67 @@
 
   var root = document.getElementById('app');
 
+  var RANGE_STEPS = [50, 75, 100];
+  var QUALITY_LEVELS = [2, 3, 4];
+  var QUALITY_LABELS = { 2:'Fair', 3:'Good', 4:'Excellent' };
+  var LMS_LABELS = { 1:'Poor', 2:'Fair', 3:'Good', 4:'Excellent' };
+  var OLDER_RANGE_KEYS = ['vocabulary', 'understanding', 'interaction'];
+  var STAR_MILESTONE = 5;
+
+  function isOlderClass(cls){
+    return !!(cls && cls.ageGroup === 'older');
+  }
+
+  function defaultSkillsOlder(){
+    return { vocabulary:50, understanding:50, quality:3, interaction:50 };
+  }
+
+  function normalizeRangePct(v){
+    var n = Number(v);
+    if(n >= 100) return 100;
+    if(n >= 75) return 75;
+    return 50;
+  }
+
+  function normalizeQuality(v){
+    var n = Number(v);
+    if(n === 2 || n === 4) return n;
+    return 3;
+  }
+
+  function ensureSkillsOlder(s){
+    if(!s.skillsOlder) s.skillsOlder = defaultSkillsOlder();
+    s.skillsOlder.vocabulary = normalizeRangePct(s.skillsOlder.vocabulary);
+    s.skillsOlder.understanding = normalizeRangePct(s.skillsOlder.understanding);
+    s.skillsOlder.interaction = normalizeRangePct(s.skillsOlder.interaction);
+    s.skillsOlder.quality = normalizeQuality(s.skillsOlder.quality);
+    return s.skillsOlder;
+  }
+
+  function stepRange(value, dir){
+    var idx = RANGE_STEPS.indexOf(normalizeRangePct(value));
+    if(idx < 0) idx = 0;
+    return RANGE_STEPS[clamp(idx + dir, 0, RANGE_STEPS.length - 1)];
+  }
+
+  function cycleRange(value){
+    var idx = RANGE_STEPS.indexOf(normalizeRangePct(value));
+    if(idx < 0) idx = 0;
+    return RANGE_STEPS[(idx + 1) % RANGE_STEPS.length];
+  }
+
+  function cycleQuality(value){
+    var idx = QUALITY_LEVELS.indexOf(normalizeQuality(value));
+    if(idx < 0) idx = 1;
+    return QUALITY_LEVELS[(idx + 1) % QUALITY_LEVELS.length];
+  }
+
+  function stepQuality(value, dir){
+    var idx = QUALITY_LEVELS.indexOf(normalizeQuality(value));
+    if(idx < 0) idx = 1;
+    return QUALITY_LEVELS[clamp(idx + dir, 0, QUALITY_LEVELS.length - 1)];
+  }
+
   function makeStudent(name, index){
     return {
       id: uid('stu'),
@@ -498,7 +711,8 @@
       positive: 0,
       negative: 0,
       colorIndex: (index || 0) % paletteSize(),
-      skills: { songs:false, stories:false, phonics:false, blending:false }
+      skills: { songs:false, stories:false, phonics:false, blending:false },
+      skillsOlder: defaultSkillsOlder()
     };
   }
 
@@ -523,6 +737,14 @@
       if(previous){
         student.id = previous.id || student.id;
         student.colorIndex = (typeof previous.colorIndex === 'number') ? previous.colorIndex : student.colorIndex;
+        if(previous.skillsOlder){
+          student.skillsOlder = {
+            vocabulary: normalizeRangePct(previous.skillsOlder.vocabulary),
+            understanding: normalizeRangePct(previous.skillsOlder.understanding),
+            interaction: normalizeRangePct(previous.skillsOlder.interaction),
+            quality: normalizeQuality(previous.skillsOlder.quality)
+          };
+        }
       }
       return student;
     });
@@ -530,14 +752,18 @@
 
   function prepareRosterForUse(roster){
     if(!roster || !roster.students) return roster;
+    var older = isOlderClass(roster);
     roster.students.forEach(function(s, i){
       if(typeof s.positive !== 'number') s.positive = 0;
       if(typeof s.negative !== 'number') s.negative = 0;
       if(!s.skills) s.skills = { songs:false, stories:false, phonics:false, blending:false };
       if(typeof s.colorIndex !== 'number') s.colorIndex = i % paletteSize();
+      if(older) ensureSkillsOlder(s);
       delete s.expanded;
     });
-    if(typeof roster.negativeEnabled !== 'boolean') roster.negativeEnabled = true;
+    if(typeof roster.negativeEnabled !== 'boolean'){
+      roster.negativeEnabled = older ? false : true;
+    }
     return roster;
   }
 
@@ -705,12 +931,17 @@
     var existingRoster = editingId ? await loadRoster(editingId) : null;
     var id = editingId || uid('cls');
     var students = buildStudentsFromNames(rawNames, existingRoster);
+    var older = ageGroup === 'older';
+    if(older){
+      students.forEach(function(s){ ensureSkillsOlder(s); });
+    }
+    var defaultNeg = older ? false : true;
     var classObj = {
       id: id,
       className: className,
       ageGroup: ageGroup,
       students: students,
-      negativeEnabled: existingRoster && typeof existingRoster.negativeEnabled === 'boolean' ? existingRoster.negativeEnabled : true
+      negativeEnabled: existingRoster && typeof existingRoster.negativeEnabled === 'boolean' ? existingRoster.negativeEnabled : defaultNeg
     };
 
     await saveRoster(id, classObj);
@@ -789,20 +1020,102 @@
     }
   }
 
+  function rangeToLevel(pct){
+    var n = normalizeRangePct(pct);
+    if(n >= 100) return 4;
+    if(n >= 75) return 3;
+    return 2;
+  }
+
+  function levelFace(level){
+    if(level >= 4) return '😊';
+    if(level >= 3) return '😐';
+    return '🙁';
+  }
+
+  function olderGaugeHtml(level, attrs, title){
+    return '' +
+      '<button class="older-gauge" data-level="' + level + '" ' + attrs + ' title="' + title + '">' +
+        '<span class="older-gauge-fill"></span>' +
+        '<span class="older-gauge-face">' + levelFace(level) + '</span>' +
+      '</button>';
+  }
+
+  function olderSkillsSubrowHtml(){
+    return '' +
+      '<div class="skills-subrow older-bulk">' +
+        '<button class="rbtn skill" data-bulk-range="vocabulary" data-dir="1" title="Raise Vocabulary for everyone">Vocab +</button>' +
+        '<button class="rbtn skill" data-bulk-range="vocabulary" data-dir="-1" title="Lower Vocabulary for everyone">Vocab −</button>' +
+        '<button class="rbtn skill" data-bulk-range="understanding" data-dir="1" title="Raise Understanding for everyone">Und +</button>' +
+        '<button class="rbtn skill" data-bulk-range="understanding" data-dir="-1" title="Lower Understanding for everyone">Und −</button>' +
+        '<button class="rbtn skill" data-bulk-quality="1" data-dir="1" title="Raise Quality for everyone">Qual +</button>' +
+        '<button class="rbtn skill" data-bulk-quality="1" data-dir="-1" title="Lower Quality for everyone">Qual −</button>' +
+        '<button class="rbtn skill" data-bulk-range="interaction" data-dir="1" title="Raise Interaction for everyone">Int +</button>' +
+        '<button class="rbtn skill" data-bulk-range="interaction" data-dir="-1" title="Lower Interaction for everyone">Int −</button>' +
+        '<button class="rbtn skill" data-bulk="neg+" title="Worse discipline for everyone">Disc +</button>' +
+        '<button class="rbtn skill" data-bulk="neg-" title="Better discipline for everyone">Disc −</button>' +
+      '</div>' +
+      '<div class="older-col-headers" aria-hidden="true">' +
+        '<div class="och-spacer"></div>' +
+        '<div class="och-progress"></div>' +
+        '<div class="och-star"></div>' +
+        '<div class="och-skills">' +
+          '<span title="Vocabulary">Voc</span>' +
+          '<span title="Understanding">Und</span>' +
+          '<span title="Quality">Qual</span>' +
+          '<span title="Interaction">Int</span>' +
+          '<span title="Discipline">Disc</span>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function kgSkillsSubrowHtml(){
+    return '' +
+      '<div class="skills-subrow">' +
+        '<button class="rbtn skill" data-bulk-skill="songs" title="Set Songs &amp; Chants for everyone">🎵</button>' +
+        '<button class="rbtn skill" data-bulk-skill="stories" title="Set Stories &amp; Chants for everyone">📖</button>' +
+        '<button class="rbtn skill" data-bulk-skill="phonics" title="Set Phonics for everyone">🔤</button>' +
+        '<button class="rbtn skill" data-bulk-skill="blending" title="Set Blending for everyone">🗣️</button>' +
+      '</div>';
+  }
+
   function renderTracker(){
     state.screen = 'tracker';
     var cls = state.currentClass;
+    var older = isOlderClass(cls);
     document.body.classList.toggle('age-kg', cls.ageGroup === 'kindergarten');
+    document.body.classList.toggle('age-older', older);
     document.body.style.setProperty('--emoji-scale', cls.ageGroup === 'kindergarten' ? '1.08' : '0.94');
     document.body.classList.toggle('skills-open', uiSkillsVisible);
 
-    if(typeof cls.negativeEnabled !== 'boolean') cls.negativeEnabled = true;
+    if(typeof cls.negativeEnabled !== 'boolean') cls.negativeEnabled = older ? false : true;
+    if(older) cls.students.forEach(ensureSkillsOlder);
 
     var SUN_ICON = '<svg class="theme-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4" y1="12" x2="2" y2="12"></line><line x1="22" y1="12" x2="20" y2="12"></line><line x1="4.9" y1="4.9" x2="3.5" y2="3.5"></line><line x1="20.5" y1="20.5" x2="19.1" y2="19.1"></line><line x1="4.9" y1="19.1" x2="3.5" y2="20.5"></line><line x1="20.5" y1="3.5" x2="19.1" y2="4.9"></line></svg>';
     var MOON_ICON = '<svg class="theme-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path></svg>';
     var STAR_OUTLINE = '<svg class="ribbon-star" viewBox="0 0 26 26"><use href="#starPath"></use></svg>';
 
-    var rowsHtml = cls.students.map(function(s){ return rowTemplate(s, cls.negativeEnabled); }).join('');
+    // Older: never use the left discipline column — face lives at end of each row.
+    var showLeftNeg = !older && !!cls.negativeEnabled;
+    var rowsHtml = cls.students.map(function(s){ return rowTemplate(s, showLeftNeg, older); }).join('');
+
+    var leftBulk = (!older && cls.negativeEnabled) ?
+      '<div class="ribbon-group">' +
+        '<button class="rbtn" data-bulk="neg+"> :( +1</button>' +
+        '<button class="rbtn" data-bulk="neg-"> :( −1</button>' +
+      '</div>'
+    : '<div class="ribbon-group"></div>';
+
+    var centerRibbon = older
+      ? '<div class="ribbon-center">' +
+          '<button class="rbtn skills-vis' + (uiSkillsVisible ? ' on' : '') + '" id="toggleSkillsBtn">Toggle Skills</button>' +
+        '</div>'
+      : '<div class="ribbon-center">' +
+          '<button class="rbtn skills-vis' + (uiSkillsVisible ? ' on' : '') + '" id="toggleSkillsBtn">Toggle Skills</button>' +
+          '<button class="rbtn behavior-toggle' + (cls.negativeEnabled ? '' : ' off') + '" id="toggleBehaviorBtn" title="Permanently show/hide negative behavior tracking for this class">' +
+            (cls.negativeEnabled ? 'Behavior: On' : 'Behavior: Off') +
+          '</button>' +
+        '</div>';
 
     root.innerHTML =
     '<div id="tracker-screen">' +
@@ -818,32 +1131,15 @@
       '</div>' +
 
       '<div class="bulk-ribbon">' +
-        (cls.negativeEnabled ?
-          '<div class="ribbon-group">' +
-            '<button class="rbtn" data-bulk="neg+"> :( +1</button>' +
-            '<button class="rbtn" data-bulk="neg-"> :( −1</button>' +
-          '</div>'
-        : '<div class="ribbon-group"></div>') +
-        '<div class="ribbon-center">' +
-          '<button class="rbtn skills-vis' + (uiSkillsVisible ? ' on' : '') + '" id="toggleSkillsBtn">Toggle Skills</button>' +
-          '<button class="rbtn behavior-toggle' + (cls.negativeEnabled ? '' : ' off') + '" id="toggleBehaviorBtn" title="Permanently show/hide negative behavior tracking for this class">' +
-            (cls.negativeEnabled ? 'Behavior: On' : 'Behavior: Off') +
-          '</button>' +
-        '</div>' +
+        leftBulk +
+        centerRibbon +
         '<div class="ribbon-group">' +
           '<button class="rbtn" data-bulk="pos+">' + STAR_OUTLINE + ' +1</button>' +
           '<button class="rbtn" data-bulk="pos-">' + STAR_OUTLINE + ' −1</button>' +
         '</div>' +
       '</div>' +
 
-      (uiSkillsVisible ?
-        '<div class="skills-subrow">' +
-          '<button class="rbtn skill" data-bulk-skill="songs" title="Set Songs &amp; Chants for everyone">🎵</button>' +
-          '<button class="rbtn skill" data-bulk-skill="stories" title="Set Stories &amp; Chants for everyone">📖</button>' +
-          '<button class="rbtn skill" data-bulk-skill="phonics" title="Set Phonics for everyone">🔤</button>' +
-          '<button class="rbtn skill" data-bulk-skill="blending" title="Set Blending for everyone">🗣️</button>' +
-        '</div>'
-      : '') +
+      (uiSkillsVisible ? (older ? olderSkillsSubrowHtml() : kgSkillsSubrowHtml()) : '') +
 
       '<div class="main-area">' +
         '<div class="grid-pane">' +
@@ -856,6 +1152,7 @@
       '<div class="footer-bar">' +
         '<button class="rbtn" id="exportBtn">Export CSV</button>' +
         '<button class="rbtn" id="rewardsBtn">Rewards</button>' +
+        '<button class="rbtn" id="timerBtn">Timer</button>' +
         '<button class="rbtn icon-only" id="endClassBtn" title="End Class">' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
             '<circle cx="12" cy="12" r="9"></circle>' +
@@ -870,15 +1167,19 @@
     document.getElementById('exportBtn').addEventListener('click', exportCsv);
     document.getElementById('endClassBtn').addEventListener('click', endClass);
     document.getElementById('rewardsBtn').addEventListener('click', toggleRewardsModal);
+    document.getElementById('timerBtn').addEventListener('click', openClassTimer);
     document.getElementById('toggleSkillsBtn').addEventListener('click', function(){
       uiSkillsVisible = !uiSkillsVisible;
       renderTracker();
     });
-    document.getElementById('toggleBehaviorBtn').addEventListener('click', function(){
-      cls.negativeEnabled = !cls.negativeEnabled;
-      persistCurrent();
-      renderTracker();
-    });
+    var behaviorBtn = document.getElementById('toggleBehaviorBtn');
+    if(behaviorBtn){
+      behaviorBtn.addEventListener('click', function(){
+        cls.negativeEnabled = !cls.negativeEnabled;
+        persistCurrent();
+        renderTracker();
+      });
+    }
 
     root.querySelectorAll('[data-bulk]').forEach(function(btn){
       btn.addEventListener('click', function(){ applyBulk(btn.getAttribute('data-bulk')); });
@@ -886,13 +1187,70 @@
     root.querySelectorAll('[data-bulk-skill]').forEach(function(btn){
       btn.addEventListener('click', function(){ applyBulkSkill(btn.getAttribute('data-bulk-skill')); });
     });
+    root.querySelectorAll('[data-bulk-range]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        applyBulkRange(btn.getAttribute('data-bulk-range'), Number(btn.getAttribute('data-dir')));
+      });
+    });
+    root.querySelectorAll('[data-bulk-quality]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        applyBulkQuality(Number(btn.getAttribute('data-dir')) || 1);
+      });
+    });
 
     wireRosterEvents();
     updateSkillButtonStates();
     renderCelebration();
   }
 
-  function rowTemplate(s, negativeEnabled){
+  function olderStarsHtml(s){
+    // After the first full star (5), keep the bar full; only the badge number grows.
+    var progress = s.positive >= STAR_MILESTONE
+      ? 100
+      : ((s.positive % STAR_MILESTONE) / STAR_MILESTONE) * 100;
+    var countLabel = s.positive > 99 ? '99+' : String(s.positive);
+    return '' +
+      '<div class="star-zone older-stars">' +
+        '<button class="older-progress" data-older-star="sub" data-stu="' + s.id + '" title="Remove participation">' +
+          '<span style="width:' + progress + '%"></span>' +
+        '</button>' +
+        '<button class="older-star-badge' + (s.positive > 0 ? ' has-star' : '') + '" data-older-star="add" data-stu="' + s.id + '" title="Add participation">' +
+          countLabel +
+        '</button>' +
+      '</div>';
+  }
+
+  function kgStarsHtml(s){
+    var STAR_ICON_SVG = '<svg class="star-svg" viewBox="0 0 26 26"><use href="#starPath" class="star-shadow" x="2" y="2"></use><use href="#starPath" class="star-fill"></use></svg>';
+    if(s.positive < 5){
+      return [0,1,2,3,4].map(function(i){
+        return '<button class="star-slot' + (s.positive > i ? ' filled' : '') + '" data-star="' + i + '" data-stu="' + s.id + '">' + STAR_ICON_SVG + '</button>';
+      }).join('');
+    }
+    return [0,1,2,3].map(function(i){
+      return '<button class="star-slot filled" data-star="' + i + '" data-stu="' + s.id + '">' + STAR_ICON_SVG + '</button>';
+    }).join('') +
+    '<button class="star-slot badge" data-star="4" data-stu="' + s.id + '">' + (s.positive > 99 ? '99+' : s.positive) + '</button>';
+  }
+
+  function olderSkillZoneHtml(s){
+    var so = ensureSkillsOlder(s);
+    return '' +
+      '<div class="skill-zone older-skills">' +
+        olderGaugeHtml(rangeToLevel(so.vocabulary), 'data-older-range="vocabulary" data-stu="' + s.id + '"', 'Vocabulary') +
+        olderGaugeHtml(rangeToLevel(so.understanding), 'data-older-range="understanding" data-stu="' + s.id + '"', 'Understanding') +
+        olderGaugeHtml(normalizeQuality(so.quality), 'data-older-quality="1" data-stu="' + s.id + '"', 'Quality') +
+        olderGaugeHtml(rangeToLevel(so.interaction), 'data-older-range="interaction" data-stu="' + s.id + '"', 'Interaction') +
+      '</div>';
+  }
+
+  function olderDisciplineHtml(s){
+    var faces = ['😊','😐','🙁','😢'];
+    var face = faces[clamp(s.negative,0,3)];
+    return '<button class="older-face-chip" data-older-face="' + s.id + '" title="Discipline">' + face + '</button>';
+  }
+
+  function rowTemplate(s, negativeEnabled, older){
     var faces = ['😊','😐','🙁','😢'];
     var face = faces[clamp(s.negative,0,3)];
     var maxedOut = s.negative >= 3;
@@ -901,31 +1259,23 @@
       return '<span class="strike' + (i < s.negative ? ' filled' : '') + '">✕</span>';
     }).join('');
 
-    var negZoneHtml = negativeEnabled ?
-      '<div class="neg-zone' + (maxedOut ? ' maxed' : '') + '">' +
-        '<button class="face-btn" data-face="' + s.id + '" title="Tap for a behavior mark">' + face + '</button>' +
-        '<div class="strikes" data-dots="' + s.id + '" title="Tap a mark to remove it">' + strikesHtml + '</div>' +
-        (maxedOut ? '<span class="out-tag">OUT</span>' : '') +
-      '</div>'
-    : '';
-
-    // 5-wide star row: 0-4 shown as plain stars; 5+ collapses the last slot
-    // into a number badge so the row width never grows.
-    var STAR_ICON_SVG = '<svg class="star-svg" viewBox="0 0 26 26"><use href="#starPath" class="star-shadow" x="2" y="2"></use><use href="#starPath" class="star-fill"></use></svg>';
-    var starsHtml;
-    if(s.positive < 5){
-      starsHtml = [0,1,2,3,4].map(function(i){
-        return '<button class="star-slot' + (s.positive > i ? ' filled' : '') + '" data-star="' + i + '" data-stu="' + s.id + '">' + STAR_ICON_SVG + '</button>';
-      }).join('');
-    } else {
-      starsHtml = [0,1,2,3].map(function(i){
-        return '<button class="star-slot filled" data-star="' + i + '" data-stu="' + s.id + '">' + STAR_ICON_SVG + '</button>';
-      }).join('') +
-      '<button class="star-slot badge" data-star="4" data-stu="' + s.id + '">' + (s.positive > 99 ? '99+' : s.positive) + '</button>';
+    var negZoneHtml = '';
+    if(negativeEnabled && !older){
+      negZoneHtml =
+        '<div class="neg-zone' + (maxedOut ? ' maxed' : '') + '">' +
+          '<button class="face-btn" data-face="' + s.id + '" title="Tap for a behavior mark">' + face + '</button>' +
+          '<div class="strikes" data-dots="' + s.id + '" title="Tap a mark to remove it">' + strikesHtml + '</div>' +
+          (maxedOut ? '<span class="out-tag">OUT</span>' : '') +
+        '</div>';
     }
 
+    var starsHtml = older ? olderStarsHtml(s) : ('<div class="star-zone">' + kgStarsHtml(s) + '</div>');
+
     var skillZoneHtml = '';
-    if(uiSkillsVisible){
+    if(older){
+      var olderSkills = uiSkillsVisible ? olderSkillZoneHtml(s) : '';
+      skillZoneHtml = '<div class="older-skills-wrap">' + olderSkills + olderDisciplineHtml(s) + '</div>';
+    } else if(uiSkillsVisible){
       var skillDefs = [
         {k:'songs', icon:'🎵'}, {k:'stories', icon:'📖'}, {k:'phonics', icon:'🔤'}, {k:'blending', icon:'🗣️'}
       ];
@@ -946,7 +1296,7 @@
       '<div class="name-wrap">' +
         '<button class="name-pill" data-namecolor="' + s.id + '" ' + pillStyle + ' title="Tap to change color">' + escapeHtml(s.name) + '</button>' +
       '</div>' +
-      '<div class="star-zone">' + starsHtml + '</div>' +
+      starsHtml +
       skillZoneHtml +
     '</div>';
   }
@@ -965,10 +1315,25 @@
         afterStudentChange();
         return;
       }
+      var olderFace = e.target.closest('[data-older-face]');
+      if(olderFace){
+        var sof = findStudent(olderFace.getAttribute('data-older-face'));
+        sof.negative = clamp(sof.negative + 1, 0, 3);
+        afterStudentChange();
+        return;
+      }
       var dots = e.target.closest('[data-dots]');
       if(dots){
         var s2 = findStudent(dots.getAttribute('data-dots'));
         s2.negative = clamp(s2.negative - 1, 0, 3);
+        afterStudentChange();
+        return;
+      }
+      var olderStar = e.target.closest('[data-older-star]');
+      if(olderStar){
+        var sos = findStudent(olderStar.getAttribute('data-stu'));
+        if(olderStar.getAttribute('data-older-star') === 'add') sos.positive = sos.positive + 1;
+        else sos.positive = clamp(sos.positive - 1, 0, 999999);
         afterStudentChange();
         return;
       }
@@ -978,6 +1343,23 @@
         var idx = Number(star.getAttribute('data-star'));
         if(idx === 4){ s3.positive = s3.positive + 1; }
         else { s3.positive = clamp(s3.positive - 1, 0, 999999); }
+        afterStudentChange();
+        return;
+      }
+      var rangeChip = e.target.closest('[data-older-range]');
+      if(rangeChip){
+        var sr = findStudent(rangeChip.getAttribute('data-stu'));
+        var rkey = rangeChip.getAttribute('data-older-range');
+        ensureSkillsOlder(sr);
+        sr.skillsOlder[rkey] = cycleRange(sr.skillsOlder[rkey]);
+        afterStudentChange();
+        return;
+      }
+      var qualityChip = e.target.closest('[data-older-quality]');
+      if(qualityChip){
+        var sq = findStudent(qualityChip.getAttribute('data-stu'));
+        ensureSkillsOlder(sq);
+        sq.skillsOlder.quality = cycleQuality(sq.skillsOlder.quality);
         afterStudentChange();
         return;
       }
@@ -1010,8 +1392,10 @@
   function refreshRosterOnly(){
     var scroll = document.getElementById('rosterScroll');
     var scrollTop = scroll.scrollTop;
-    var negativeEnabled = state.currentClass.negativeEnabled;
-    scroll.innerHTML = state.currentClass.students.map(function(s){ return rowTemplate(s, negativeEnabled); }).join('');
+    var cls = state.currentClass;
+    var older = isOlderClass(cls);
+    var showLeftNeg = !older && !!cls.negativeEnabled;
+    scroll.innerHTML = cls.students.map(function(s){ return rowTemplate(s, showLeftNeg, older); }).join('');
     scroll.scrollTop = scrollTop;
     updateSkillButtonStates();
   }
@@ -1033,7 +1417,26 @@
     afterStudentChange();
   }
 
+  function applyBulkRange(key, dir){
+    if(OLDER_RANGE_KEYS.indexOf(key) < 0) return;
+    state.currentClass.students.forEach(function(s){
+      ensureSkillsOlder(s);
+      s.skillsOlder[key] = stepRange(s.skillsOlder[key], dir);
+    });
+    afterStudentChange();
+  }
+
+  function applyBulkQuality(dir){
+    var step = dir < 0 ? -1 : 1;
+    state.currentClass.students.forEach(function(s){
+      ensureSkillsOlder(s);
+      s.skillsOlder.quality = stepQuality(s.skillsOlder.quality, step);
+    });
+    afterStudentChange();
+  }
+
   function updateSkillButtonStates(){
+    if(isOlderClass(state.currentClass)) return;
     var students = state.currentClass.students;
     ['songs','stories','phonics','blending'].forEach(function(key){
       var btn = document.querySelector('[data-bulk-skill="' + key + '"]');
@@ -1044,22 +1447,17 @@
   }
 
   /* ---------------- celebration board ---------------- */
-  var STAR_MILESTONE = 5;
 
   function renderCelebration(){
     var pane = document.getElementById('celebrationPane');
     if(!pane) return;
     var students = state.currentClass.students;
+    var older = isOlderClass(state.currentClass);
 
     // Star Ninja is a milestone, not a ranking -- everyone who reaches the
     // star target earns it, shown alongside their current count.
     var starNinjas = students.filter(function(s){ return s.positive >= STAR_MILESTONE; })
       .map(function(s){ return escapeHtml(s.name) + ': ' + s.positive; });
-
-    var singStars = students.filter(function(s){ return s.skills.songs; }).map(function(s){ return s.name; });
-    var storyTellers = students.filter(function(s){ return s.skills.stories; }).map(function(s){ return s.name; });
-    var phonicsBosses = students.filter(function(s){ return s.skills.phonics; }).map(function(s){ return s.name; });
-    var blendingKings = students.filter(function(s){ return s.skills.blending; }).map(function(s){ return s.name; });
 
     function achCard(icon, title, names){
       if(!names.length) return '';
@@ -1073,12 +1471,24 @@
       '</div>';
     }
 
-    var cards =
-      achCard('🌟', 'Star Ninja', starNinjas) +
-      achCard('🎵', 'Sing Star', singStars.map(escapeHtml)) +
-      achCard('📖', 'Story Teller', storyTellers.map(escapeHtml)) +
-      achCard('🔤', 'Phonics Boss', phonicsBosses.map(escapeHtml)) +
-      achCard('🗣️', 'Blending King', blendingKings.map(escapeHtml));
+    var cards = achCard('🌟', 'Star Ninja', starNinjas);
+    if(!older){
+      var singStars = students.filter(function(s){ return s.skills.songs; }).map(function(s){ return s.name; });
+      var storyTellers = students.filter(function(s){ return s.skills.stories; }).map(function(s){ return s.name; });
+      var phonicsBosses = students.filter(function(s){ return s.skills.phonics; }).map(function(s){ return s.name; });
+      var blendingKings = students.filter(function(s){ return s.skills.blending; }).map(function(s){ return s.name; });
+      cards +=
+        achCard('🎵', 'Sing Star', singStars.map(escapeHtml)) +
+        achCard('📖', 'Story Teller', storyTellers.map(escapeHtml)) +
+        achCard('🔤', 'Phonics Boss', phonicsBosses.map(escapeHtml)) +
+        achCard('🗣️', 'Blending King', blendingKings.map(escapeHtml));
+    } else {
+      var excellentQuality = students.filter(function(s){ return ensureSkillsOlder(s).quality === 4; }).map(function(s){ return s.name; });
+      var topUnd = students.filter(function(s){ return ensureSkillsOlder(s).understanding === 100; }).map(function(s){ return s.name; });
+      cards +=
+        achCard('✨', 'Excellent Quality', excellentQuality.map(escapeHtml)) +
+        achCard('🧠', 'Full Understanding', topUnd.map(escapeHtml));
+    }
 
     if(!cards){ pane.innerHTML = ''; return; }
 
@@ -1103,7 +1513,17 @@
     var stickers = Math.floor(s.positive / STAR_MILESTONE);
     var leftoverStars = s.positive % STAR_MILESTONE;
     var starStamps = stickers + leftoverStars;
-    var skillCount = ['songs','stories','phonics','blending'].filter(function(k){ return s.skills[k]; }).length;
+    var skillCount;
+    if(isOlderClass(state.currentClass)){
+      var so = ensureSkillsOlder(s);
+      skillCount = 0;
+      if(so.vocabulary >= 75) skillCount++;
+      if(so.understanding >= 75) skillCount++;
+      if(so.interaction >= 75) skillCount++;
+      if(so.quality >= 3) skillCount++;
+    } else {
+      skillCount = ['songs','stories','phonics','blending'].filter(function(k){ return s.skills[k]; }).length;
+    }
     var stamps = Math.max(0, starStamps + skillCount - s.negative);
     return { stickers: stickers, stamps: stamps };
   }
@@ -1145,16 +1565,29 @@
   /* ---------------- CSV export ---------------- */
   function exportCsv(){
     var cls = state.currentClass;
-    var header = ['Student Name','Positive Score','Negative Score','Songs & Chants','Stories & Chants','Phonics','Blending'];
-    var rows = cls.students.map(function(s){
-      return [
-        csvEscape(s.name), s.positive, s.negative,
-        s.skills.songs ? 'TRUE' : 'FALSE',
-        s.skills.stories ? 'TRUE' : 'FALSE',
-        s.skills.phonics ? 'TRUE' : 'FALSE',
-        s.skills.blending ? 'TRUE' : 'FALSE'
-      ].join(',');
-    });
+    var older = isOlderClass(cls);
+    var header, rows;
+    if(older){
+      header = ['Student Name','Positive Score','Negative Score','Vocabulary','Understanding','Quality','Interaction'];
+      rows = cls.students.map(function(s){
+        var so = ensureSkillsOlder(s);
+        return [
+          csvEscape(s.name), s.positive, s.negative,
+          so.vocabulary, so.understanding, QUALITY_LABELS[so.quality], so.interaction
+        ].join(',');
+      });
+    } else {
+      header = ['Student Name','Positive Score','Negative Score','Songs & Chants','Stories & Chants','Phonics','Blending'];
+      rows = cls.students.map(function(s){
+        return [
+          csvEscape(s.name), s.positive, s.negative,
+          s.skills.songs ? 'TRUE' : 'FALSE',
+          s.skills.stories ? 'TRUE' : 'FALSE',
+          s.skills.phonics ? 'TRUE' : 'FALSE',
+          s.skills.blending ? 'TRUE' : 'FALSE'
+        ].join(',');
+      });
+    }
     var csv = header.join(',') + '\n' + rows.join('\n');
     var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
     var url = URL.createObjectURL(blob);
@@ -1173,17 +1606,392 @@
     return s;
   }
 
+  /* ---------------- LMS mapping (older classes) ---------------- */
+  function pctToLms(pct){
+    var n = normalizeRangePct(pct);
+    if(n >= 100) return 4;
+    if(n >= 75) return 3;
+    return 2;
+  }
+
+  function mapActiveFromStars(positive){
+    if(positive >= 5) return 4;
+    if(positive >= 3) return 3;
+    return 2;
+  }
+
+  function mapAttitude(s){
+    // Fair only when zero stars AND at least one bad-behavior mark.
+    if(s.positive === 0 && s.negative >= 1) return 2;
+    if(s.positive >= 5 && s.negative === 0) return 4;
+    return 3;
+  }
+
+  function mapDiscipline(negative){
+    var n = clamp(negative, 0, 3);
+    if(n === 0) return 4;
+    if(n === 1) return 3;
+    if(n === 2) return 2;
+    return 1;
+  }
+
+  function buildOlderLmsRows(cls){
+    return cls.students.map(function(s){
+      var so = ensureSkillsOlder(s);
+      var attitude = mapAttitude(s);
+      var active = mapActiveFromStars(s.positive);
+      var understand = pctToLms(so.understanding);
+      var quality = normalizeQuality(so.quality);
+      var discipline = mapDiscipline(s.negative);
+      return {
+        studentName: s.name,
+        attitude: attitude,
+        active: active,
+        understand: understand,
+        quality: quality,
+        discipline: discipline
+      };
+    });
+  }
+
+  function formatLmsCell(score){
+    return LMS_LABELS[score] + ' (' + score + ')';
+  }
+
+  function showOlderLmsReport(lmsRows, onDone){
+    closeRewardsModal();
+    var existing = document.getElementById('lmsReportOverlay');
+    if(existing) existing.remove();
+
+    var rowsHtml = lmsRows.map(function(r){
+      return '<tr>' +
+        '<td>' + escapeHtml(r.studentName) + '</td>' +
+        '<td class="score">' + formatLmsCell(r.attitude) + '</td>' +
+        '<td class="score">' + formatLmsCell(r.active) + '</td>' +
+        '<td class="score">' + formatLmsCell(r.understand) + '</td>' +
+        '<td class="score">' + formatLmsCell(r.quality) + '</td>' +
+        '<td class="score">' + formatLmsCell(r.discipline) + '</td>' +
+      '</tr>';
+    }).join('');
+
+    var overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.id = 'lmsReportOverlay';
+    overlay.innerHTML =
+      '<div class="modal-card lms-modal-card">' +
+        '<div class="modal-header">' +
+          '<div class="modal-title">LMS scores</div>' +
+          '<button class="modal-close" id="lmsCloseBtn">✕</button>' +
+        '</div>' +
+        '<p class="lms-hint">Copy these into the school LMS (Attitude, Active, Understand, Quality, Discipline). Scale: 2 Fair · 3 Good · 4 Excellent · Discipline may be 1 Poor.</p>' +
+        '<table class="lms-table">' +
+          '<thead><tr><th>Student</th><th>Attitude</th><th>Active</th><th>Understand</th><th>Quality</th><th>Discipline</th></tr></thead>' +
+          '<tbody>' + rowsHtml + '</tbody>' +
+        '</table>' +
+        '<div class="lms-actions">' +
+          '<button class="rbtn" id="lmsDoneBtn">Done — reset class</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    function finish(){
+      overlay.remove();
+      if(onDone) onDone();
+    }
+    document.getElementById('lmsCloseBtn').addEventListener('click', finish);
+    document.getElementById('lmsDoneBtn').addEventListener('click', finish);
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) finish(); });
+  }
+
+  /* ---------------- class timer ---------------- */
+  var TIMER_PRESETS = [
+    { label:'5 min', seconds:300 },
+    { label:'3 min', seconds:180 },
+    { label:'2 min', seconds:120 },
+    { label:'1 min', seconds:60 },
+    { label:'30s', seconds:30 },
+    { label:'10s', seconds:10 }
+  ];
+  var timerState = {
+    totalMs: 60000,
+    remainingMs: 60000,
+    running: false,
+    raf: null,
+    lastTick: 0,
+    exploded: false,
+    presetSeconds: 60,
+    lastTickSecond: null
+  };
+  var timerAudioCtx = null;
+
+  function formatTimer(ms){
+    var totalSec = Math.max(0, Math.ceil(ms / 1000));
+    var m = Math.floor(totalSec / 60);
+    var s = totalSec % 60;
+    return m + ':' + String(s).padStart(2, '0');
+  }
+
+  function ensureTimerAudio(){
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if(!Ctx) return null;
+    if(!timerAudioCtx) timerAudioCtx = new Ctx();
+    if(timerAudioCtx.state === 'suspended') timerAudioCtx.resume();
+    return timerAudioCtx;
+  }
+
+  function playTickSound(urgent){
+    var ctx = ensureTimerAudio();
+    if(!ctx) return;
+    var now = ctx.currentTime;
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(urgent ? 980 : 760, now);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(urgent ? 0.28 : 0.16, now + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + (urgent ? 0.09 : 0.06));
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.1);
+  }
+
+  function playExplosionSound(){
+    var ctx = ensureTimerAudio();
+    if(!ctx) return;
+    var now = ctx.currentTime;
+
+    function tone(type, freqStart, freqEnd, when, dur, peak){
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freqStart, when);
+      osc.frequency.exponentialRampToValueAtTime(Math.max(20, freqEnd), when + dur);
+      gain.gain.setValueAtTime(0.0001, when);
+      gain.gain.exponentialRampToValueAtTime(peak, when + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(when);
+      osc.stop(when + dur + 0.02);
+    }
+
+    // Deep boom + mid crack
+    tone('sine', 90, 28, now, 1.1, 1.2);
+    tone('triangle', 180, 45, now, 0.7, 0.7);
+    tone('sawtooth', 320, 60, now + 0.02, 0.35, 0.35);
+
+    // Heavy noise blast
+    var duration = 1.05;
+    var buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * duration), ctx.sampleRate);
+    var data = buffer.getChannelData(0);
+    for(var i = 0; i < data.length; i++){
+      var t = i / data.length;
+      var envelope = Math.pow(1 - t, 1.15);
+      data[i] = (Math.random() * 2 - 1) * envelope;
+    }
+    var noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    var filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(4200, now);
+    filter.frequency.exponentialRampToValueAtTime(180, now + duration);
+    var noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.0001, now);
+    noiseGain.gain.exponentialRampToValueAtTime(1.4, now + 0.015);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noise.start(now);
+
+    // Second delayed thud
+    tone('sine', 70, 22, now + 0.12, 0.85, 0.9);
+  }
+
+  function stopTimerLoop(){
+    if(timerState.raf){
+      cancelAnimationFrame(timerState.raf);
+      timerState.raf = null;
+    }
+    timerState.running = false;
+    timerState.lastTick = 0;
+  }
+
+  function updateTimerDom(){
+    var overlay = document.getElementById('classTimerOverlay');
+    if(!overlay) return;
+    var timeEl = document.getElementById('timerTime');
+    var bombEl = document.getElementById('timerBomb');
+    var progress = document.getElementById('timerRingProgress');
+    var pauseBtn = document.getElementById('timerPauseBtn');
+    if(timeEl) timeEl.textContent = formatTimer(timerState.remainingMs);
+    var secsLeft = Math.ceil(timerState.remainingMs / 1000);
+    if(bombEl) bombEl.classList.toggle('show', secsLeft > 0 && secsLeft <= 15);
+    if(progress){
+      var circ = 2 * Math.PI * 54;
+      var ratio = timerState.totalMs > 0 ? clamp(timerState.remainingMs / timerState.totalMs, 0, 1) : 0;
+      progress.style.strokeDasharray = String(circ);
+      progress.style.strokeDashoffset = String(circ * (1 - ratio));
+    }
+    if(pauseBtn) pauseBtn.textContent = timerState.running ? '❚❚' : '▶';
+    overlay.querySelectorAll('[data-timer-preset]').forEach(function(btn){
+      btn.classList.toggle('active', Number(btn.getAttribute('data-timer-preset')) === timerState.presetSeconds);
+    });
+  }
+
+  function timerFrame(ts){
+    if(!timerState.running) return;
+    if(!timerState.lastTick) timerState.lastTick = ts;
+    var delta = ts - timerState.lastTick;
+    timerState.lastTick = ts;
+    timerState.remainingMs = Math.max(0, timerState.remainingMs - delta);
+
+    var secsLeft = Math.ceil(timerState.remainingMs / 1000);
+    if(secsLeft > 0 && secsLeft <= 15 && secsLeft !== timerState.lastTickSecond){
+      timerState.lastTickSecond = secsLeft;
+      playTickSound(secsLeft <= 5);
+    }
+
+    updateTimerDom();
+    if(timerState.remainingMs <= 0){
+      stopTimerLoop();
+      updateTimerDom();
+      if(!timerState.exploded){
+        timerState.exploded = true;
+        playExplosionSound();
+        showToast('⏰ Time!');
+      }
+      return;
+    }
+    timerState.raf = requestAnimationFrame(timerFrame);
+  }
+
+  function startTimer(){
+    if(timerState.remainingMs <= 0){
+      timerState.remainingMs = timerState.totalMs;
+      timerState.exploded = false;
+    }
+    if(timerState.running) return;
+    ensureTimerAudio();
+    timerState.running = true;
+    timerState.lastTick = 0;
+    timerState.raf = requestAnimationFrame(timerFrame);
+    updateTimerDom();
+  }
+
+  function pauseTimer(){
+    stopTimerLoop();
+    updateTimerDom();
+  }
+
+  function toggleTimerPause(){
+    if(timerState.running) pauseTimer();
+    else startTimer();
+  }
+
+  function resetTimer(){
+    stopTimerLoop();
+    timerState.remainingMs = timerState.totalMs;
+    timerState.exploded = false;
+    timerState.lastTickSecond = null;
+    updateTimerDom();
+  }
+
+  function setTimerPreset(seconds){
+    stopTimerLoop();
+    timerState.presetSeconds = seconds;
+    timerState.totalMs = seconds * 1000;
+    timerState.remainingMs = timerState.totalMs;
+    timerState.exploded = false;
+    timerState.lastTickSecond = null;
+    updateTimerDom();
+  }
+
+  function closeClassTimer(){
+    stopTimerLoop();
+    var overlay = document.getElementById('classTimerOverlay');
+    if(overlay) overlay.remove();
+  }
+
+  function openClassTimer(){
+    closeRewardsModal();
+    var existing = document.getElementById('classTimerOverlay');
+    if(existing){ existing.remove(); }
+
+    var presetsHtml = TIMER_PRESETS.map(function(p){
+      return '<button class="timer-preset" data-timer-preset="' + p.seconds + '">' + p.label + '</button>';
+    }).join('');
+
+    var overlay = document.createElement('div');
+    overlay.className = 'timer-overlay';
+    overlay.id = 'classTimerOverlay';
+    overlay.innerHTML =
+      '<div class="timer-top">' +
+        '<button class="timer-close" id="timerCloseBtn" title="Close">✕</button>' +
+        '<div class="timer-presets">' + presetsHtml + '</div>' +
+        '<span style="width:40px"></span>' +
+      '</div>' +
+      '<div class="timer-stage">' +
+        '<div class="timer-ring-wrap">' +
+          '<svg class="timer-ring" viewBox="0 0 120 120" aria-hidden="true">' +
+            '<circle class="timer-ring-track" cx="60" cy="60" r="54"></circle>' +
+            '<circle class="timer-ring-progress" id="timerRingProgress" cx="60" cy="60" r="54"></circle>' +
+          '</svg>' +
+          '<div class="timer-center">' +
+            '<div class="timer-bomb" id="timerBomb">💣</div>' +
+            '<div class="timer-time" id="timerTime">1:00</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="timer-controls">' +
+        '<button class="timer-ctrl" id="timerPauseBtn" title="Pause / Start">▶</button>' +
+        '<button class="timer-ctrl primary" id="timerResetBtn" title="Reset">↺</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    if(!timerState.totalMs) setTimerPreset(60);
+    updateTimerDom();
+
+    document.getElementById('timerCloseBtn').addEventListener('click', closeClassTimer);
+    document.getElementById('timerPauseBtn').addEventListener('click', toggleTimerPause);
+    document.getElementById('timerResetBtn').addEventListener('click', resetTimer);
+    overlay.querySelectorAll('[data-timer-preset]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        setTimerPreset(Number(btn.getAttribute('data-timer-preset')));
+      });
+    });
+  }
+
   /* ---------------- end class / archive ---------------- */
+  async function finishEndClass(cls, report){
+    await appendReport(cls.id, report);
+
+    cls.students.forEach(function(s){
+      s.positive = 0; s.negative = 0;
+      s.skills = { songs:false, stories:false, phonics:false, blending:false };
+      if(isOlderClass(cls)) s.skillsOlder = defaultSkillsOlder();
+    });
+    await saveRoster(cls.id, cls);
+    await clearActiveClassId();
+    state.currentClass = null;
+    renderHome();
+    showToast('Session archived — fresh start for next class!');
+  }
+
   async function endClass(){
     var cls = state.currentClass;
     if(!window.confirm('End this class session? Today\'s scores will be saved to history and reset to zero for next time.')) return;
+
+    var older = isOlderClass(cls);
+    var lmsRows = older ? buildOlderLmsRows(cls) : null;
 
     var report = {
       reportId: 'rep_' + todayISO().replace(/-/g,'') + '_' + Date.now().toString(36),
       classId: cls.id,
       timestamp: new Date().toISOString(),
       studentMetrics: cls.students.map(function(s){
-        return {
+        var base = {
           studentName: s.name,
           behavior: {
             positiveStars: s.positive,
@@ -1197,19 +2005,26 @@
             blending: s.skills.blending
           }
         };
+        if(older){
+          var so = ensureSkillsOlder(s);
+          base.skillsOlder = {
+            vocabulary: so.vocabulary,
+            understanding: so.understanding,
+            quality: so.quality,
+            interaction: so.interaction
+          };
+          base.lmsScores = lmsRows.find(function(r){ return r.studentName === s.name; }) || null;
+        }
+        return base;
       })
     };
-    await appendReport(cls.id, report);
 
-    cls.students.forEach(function(s){
-      s.positive = 0; s.negative = 0;
-      s.skills = { songs:false, stories:false, phonics:false, blending:false };
-    });
-    await saveRoster(cls.id, cls);
-    await clearActiveClassId();
-    state.currentClass = null;
-    renderHome();
-    showToast('Session archived — fresh start for next class!');
+    if(older){
+      showOlderLmsReport(lmsRows, function(){ finishEndClass(cls, report); });
+      return;
+    }
+
+    await finishEndClass(cls, report);
   }
 
   /* ---------------- go ---------------- */
