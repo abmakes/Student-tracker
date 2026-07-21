@@ -145,16 +145,78 @@
   .class-card{
     position:relative; padding:14px 12px 12px; text-align:left; border:3px solid var(--border-color);
     border-radius:14px; background:var(--card-bg); box-shadow:3px 3px 0 var(--border-color);
-    transition:transform .1s ease;
+    transition:transform .1s ease; cursor:pointer; width:100%; font:inherit; color:inherit;
   }
   .class-card:active{transform:translate(2px,2px); box-shadow:1px 1px 0 var(--border-color);}
   .class-card .cc-name{font-family:var(--font-display); font-weight:700; font-size:15px; display:block; margin-bottom:4px; word-break:break-word;}
-  .class-card .cc-meta{font-size:12px; color:var(--muted); font-weight:600;}
+  .class-card .cc-meta{font-size:12px; color:var(--muted); font-weight:600; display:block; margin-bottom:10px;}
   .class-card .cc-del{
     position:absolute; top:-8px; right:-8px; width:24px; height:24px; border-radius:50%;
     background:var(--coral); color:#fff; border:2px solid var(--border-color); font-size:13px; font-weight:800;
-    display:flex; align-items:center; justify-content:center; line-height:1;
+    display:flex; align-items:center; justify-content:center; line-height:1; cursor:pointer;
   }
+  .class-card .cc-manage{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:6px 10px; border:2px solid var(--border-color); border-radius:10px;
+    background:var(--paper); color:var(--ink); font-size:12px; font-weight:800; cursor:pointer;
+    box-shadow:2px 2px 0 var(--border-color);
+  }
+  .class-card .cc-manage:active{transform:translate(1px,1px); box-shadow:1px 1px 0 var(--border-color);}
+
+  /* ================= CLASS MANAGE SCREEN ================= */
+  #manage-screen{flex:1; display:flex; flex-direction:column; min-height:100dvh;}
+  .manage-header{
+    position:sticky; top:0; z-index:20; background:var(--paper);
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-bottom:1px solid var(--hairline);
+  }
+  .manage-header .manage-title{
+    flex:1; font-family:var(--font-display); font-weight:800; font-size:16px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .manage-body{flex:1; overflow:auto; padding:14px 12px 28px; display:flex; flex-direction:column; gap:14px;}
+  .manage-list{display:flex; flex-direction:column; gap:10px;}
+  .manage-row{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    padding:12px; border:3px solid var(--border-color); border-radius:14px;
+    background:var(--card-bg); box-shadow:3px 3px 0 var(--border-color);
+  }
+  .manage-row.is-absent{opacity:.72;}
+  .manage-row .manage-name{
+    flex:1 1 120px; min-width:0; font-weight:800; font-size:15px;
+    word-break:break-word;
+  }
+  .manage-row.is-absent .manage-name{
+    color:var(--muted); text-decoration:line-through;
+  }
+  .manage-attendance{
+    display:inline-flex; border:2px solid var(--border-color); border-radius:10px; overflow:hidden;
+  }
+  .manage-attendance button{
+    border:0; background:transparent; padding:7px 10px; font-size:12px; font-weight:800;
+    color:var(--muted); cursor:pointer;
+  }
+  .manage-attendance button + button{border-left:2px solid var(--border-color);}
+  .manage-attendance button.active-present{background:var(--mint); color:#fff;}
+  .manage-attendance button.active-absent{background:var(--coral); color:#fff;}
+  .manage-remove{
+    border:2px solid var(--border-color); border-radius:10px; padding:7px 10px;
+    background:var(--paper); color:var(--coral); font-size:12px; font-weight:800; cursor:pointer;
+  }
+  .manage-add{
+    display:flex; gap:8px; align-items:stretch;
+    padding:12px; border:3px dashed var(--track-line); border-radius:14px;
+  }
+  .manage-add input{
+    flex:1; min-width:0; border:2px solid var(--border-color); border-radius:10px;
+    padding:10px 12px; font:inherit; background:var(--paper); color:var(--ink);
+  }
+  .manage-add button{
+    border:2px solid var(--border-color); border-radius:10px; padding:10px 14px;
+    background:var(--mint); color:#fff; font-weight:800; cursor:pointer;
+    box-shadow:2px 2px 0 var(--border-color); white-space:nowrap;
+  }
+  .manage-empty{padding:18px; text-align:center; color:var(--muted); font-size:13.5px;}
   .empty-state{
     padding:22px 16px; text-align:center; color:var(--muted); font-size:13.5px;
     border:3px dashed var(--track-line); border-radius:14px;
@@ -638,6 +700,8 @@
     theme: 'light',
     classesIndex: [],
     editingClassId: null,
+    managingClassId: null,
+    managingRoster: null,
     currentClass: null   // { id, className, ageGroup, students:[...] }
   };
 
@@ -710,10 +774,15 @@
       name: name,
       positive: 0,
       negative: 0,
+      absent: false,
       colorIndex: (index || 0) % paletteSize(),
       skills: { songs:false, stories:false, phonics:false, blending:false },
       skillsOlder: defaultSkillsOlder()
     };
+  }
+
+  function presentStudents(cls){
+    return (cls && cls.students ? cls.students : []).filter(function(s){ return !s.absent; });
   }
 
   function normalizeName(name){
@@ -737,6 +806,7 @@
       if(previous){
         student.id = previous.id || student.id;
         student.colorIndex = (typeof previous.colorIndex === 'number') ? previous.colorIndex : student.colorIndex;
+        student.absent = !!previous.absent;
         if(previous.skillsOlder){
           student.skillsOlder = {
             vocabulary: normalizeRangePct(previous.skillsOlder.vocabulary),
@@ -756,6 +826,7 @@
     roster.students.forEach(function(s, i){
       if(typeof s.positive !== 'number') s.positive = 0;
       if(typeof s.negative !== 'number') s.negative = 0;
+      if(typeof s.absent !== 'boolean') s.absent = false;
       if(!s.skills) s.skills = { songs:false, stories:false, phonics:false, blending:false };
       if(typeof s.colorIndex !== 'number') s.colorIndex = i % paletteSize();
       if(older) ensureSkillsOlder(s);
@@ -812,7 +883,9 @@
     state.theme = (state.theme === 'light') ? 'dark' : 'light';
     document.body.setAttribute('data-theme', state.theme);
     storeSet('ui-theme', state.theme);
-    if(state.screen === 'tracker') renderTracker(); else renderHome();
+    if(state.screen === 'tracker') renderTracker();
+    else if(state.screen === 'manage') renderClassManage();
+    else renderHome();
   }
 
   /* =========================================================
@@ -833,11 +906,12 @@
       cardsHtml = '<div class="saved-grid">' + state.classesIndex.map(function(c){
         var emoji = c.ageGroup === 'kindergarten' ? '🧸' : '🎒';
         return '' +
-        '<button class="class-card" data-open="' + c.id + '">' +
-          '<span class="cc-del" data-del="' + c.id + '" title="Delete class">✕</span>' +
+        '<div class="class-card" data-open="' + c.id + '">' +
+          '<button type="button" class="cc-del" data-del="' + c.id + '" title="Delete class">✕</button>' +
           '<span class="cc-name">' + emoji + ' ' + escapeHtml(c.className) + '</span>' +
           '<span class="cc-meta">' + c.studentCount + ' students</span>' +
-        '</button>';
+          '<button type="button" class="cc-manage" data-manage="' + c.id + '">Manage</button>' +
+        '</div>';
       }).join('') + '</div>';
     }
 
@@ -905,7 +979,7 @@
 
     root.querySelectorAll('[data-open]').forEach(function(el){
       el.addEventListener('click', function(e){
-        if(e.target.closest('[data-del]')) return;
+        if(e.target.closest('[data-del]') || e.target.closest('[data-manage]')) return;
         loadClassIntoForm(el.getAttribute('data-open'));
       });
     });
@@ -914,6 +988,135 @@
         e.stopPropagation();
         confirmDeleteClass(el.getAttribute('data-del'));
       });
+    });
+    root.querySelectorAll('[data-manage]').forEach(function(el){
+      el.addEventListener('click', function(e){
+        e.stopPropagation();
+        openClassManage(el.getAttribute('data-manage'));
+      });
+    });
+  }
+
+  /* =========================================================
+     CLASS MANAGE SCREEN
+     ========================================================= */
+  async function syncIndexStudentCount(classId, count){
+    var changed = false;
+    state.classesIndex = state.classesIndex.map(function(c){
+      if(c.id !== classId) return c;
+      if(c.studentCount === count) return c;
+      changed = true;
+      return Object.assign({}, c, { studentCount: count });
+    });
+    if(changed) await saveClassesIndex(state.classesIndex);
+  }
+
+  async function persistManagedRoster(){
+    var roster = state.managingRoster;
+    if(!roster) return;
+    prepareRosterForUse(roster);
+    await saveRoster(roster.id, roster);
+    await syncIndexStudentCount(roster.id, roster.students.length);
+    if(state.currentClass && state.currentClass.id === roster.id){
+      state.currentClass = roster;
+    }
+  }
+
+  async function openClassManage(id){
+    var roster = prepareRosterForUse(await loadRoster(id));
+    if(!roster){ showToast('Class not found.'); return; }
+    state.managingClassId = id;
+    state.managingRoster = roster;
+    renderClassManage();
+  }
+
+  function renderClassManage(){
+    var roster = state.managingRoster;
+    if(!roster){ renderHome(); return; }
+    state.screen = 'manage';
+    document.body.classList.remove('age-kg', 'age-older', 'skills-open');
+
+    var rowsHtml = '';
+    if(!roster.students.length){
+      rowsHtml = '<div class="manage-empty">No students yet — add one below.</div>';
+    } else {
+      rowsHtml = '<div class="manage-list">' + roster.students.map(function(s){
+        var absent = !!s.absent;
+        return '' +
+          '<div class="manage-row' + (absent ? ' is-absent' : '') + '" data-stu="' + s.id + '">' +
+            '<div class="manage-name">' + escapeHtml(s.name) + '</div>' +
+            '<div class="manage-attendance" role="group" aria-label="Attendance for ' + escapeHtml(s.name) + '">' +
+              '<button type="button" data-attend="present" data-stu="' + s.id + '"' + (!absent ? ' class="active-present"' : '') + '>Present</button>' +
+              '<button type="button" data-attend="absent" data-stu="' + s.id + '"' + (absent ? ' class="active-absent"' : '') + '>Absent</button>' +
+            '</div>' +
+            '<button type="button" class="manage-remove" data-remove="' + s.id + '">Remove</button>' +
+          '</div>';
+      }).join('') + '</div>';
+    }
+
+    root.innerHTML =
+    '<div id="manage-screen">' +
+      '<div class="manage-header">' +
+        '<button class="icon-btn" id="manageBackBtn" title="Back">←</button>' +
+        '<div class="manage-title">Manage · ' + escapeHtml(roster.className) + '</div>' +
+      '</div>' +
+      '<div class="manage-body">' +
+        rowsHtml +
+        '<div class="manage-add">' +
+          '<input id="manageAddInput" type="text" placeholder="New student name" maxlength="60" autocomplete="off">' +
+          '<button type="button" id="manageAddBtn">Add</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+    document.getElementById('manageBackBtn').addEventListener('click', function(){
+      state.managingClassId = null;
+      state.managingRoster = null;
+      renderHome();
+    });
+
+    root.querySelectorAll('[data-attend]').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var stuId = btn.getAttribute('data-stu');
+        var markAbsent = btn.getAttribute('data-attend') === 'absent';
+        var student = roster.students.find(function(s){ return s.id === stuId; });
+        if(!student) return;
+        student.absent = markAbsent;
+        await persistManagedRoster();
+        renderClassManage();
+      });
+    });
+
+    root.querySelectorAll('[data-remove]').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var stuId = btn.getAttribute('data-remove');
+        var student = roster.students.find(function(s){ return s.id === stuId; });
+        if(!student) return;
+        if(!window.confirm('Permanently remove ' + student.name + ' from this class?')) return;
+        roster.students = roster.students.filter(function(s){ return s.id !== stuId; });
+        await persistManagedRoster();
+        renderClassManage();
+        showToast(student.name + ' removed.');
+      });
+    });
+
+    function addManagedStudent(){
+      var input = document.getElementById('manageAddInput');
+      var name = String(input && input.value || '').trim();
+      if(!name){ showToast('Enter a student name.'); return; }
+      roster.students.push(makeStudent(name, roster.students.length));
+      persistManagedRoster().then(function(){
+        renderClassManage();
+        showToast(name + ' added.');
+      });
+    }
+
+    document.getElementById('manageAddBtn').addEventListener('click', addManagedStudent);
+    document.getElementById('manageAddInput').addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        addManagedStudent();
+      }
     });
   }
 
@@ -1089,7 +1292,7 @@
     document.body.classList.toggle('skills-open', uiSkillsVisible);
 
     if(typeof cls.negativeEnabled !== 'boolean') cls.negativeEnabled = older ? false : true;
-    if(older) cls.students.forEach(ensureSkillsOlder);
+    if(older) presentStudents(cls).forEach(ensureSkillsOlder);
 
     var SUN_ICON = '<svg class="theme-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4" y1="12" x2="2" y2="12"></line><line x1="22" y1="12" x2="20" y2="12"></line><line x1="4.9" y1="4.9" x2="3.5" y2="3.5"></line><line x1="20.5" y1="20.5" x2="19.1" y2="19.1"></line><line x1="4.9" y1="19.1" x2="3.5" y2="20.5"></line><line x1="20.5" y1="3.5" x2="19.1" y2="4.9"></line></svg>';
     var MOON_ICON = '<svg class="theme-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path></svg>';
@@ -1097,7 +1300,7 @@
 
     // Older: never use the left discipline column — face lives at end of each row.
     var showLeftNeg = !older && !!cls.negativeEnabled;
-    var rowsHtml = cls.students.map(function(s){ return rowTemplate(s, showLeftNeg, older); }).join('');
+    var rowsHtml = presentStudents(cls).map(function(s){ return rowTemplate(s, showLeftNeg, older); }).join('');
 
     var leftBulk = (!older && cls.negativeEnabled) ?
       '<div class="ribbon-group">' +
@@ -1395,13 +1598,13 @@
     var cls = state.currentClass;
     var older = isOlderClass(cls);
     var showLeftNeg = !older && !!cls.negativeEnabled;
-    scroll.innerHTML = cls.students.map(function(s){ return rowTemplate(s, showLeftNeg, older); }).join('');
+    scroll.innerHTML = presentStudents(cls).map(function(s){ return rowTemplate(s, showLeftNeg, older); }).join('');
     scroll.scrollTop = scrollTop;
     updateSkillButtonStates();
   }
 
   function applyBulk(action){
-    state.currentClass.students.forEach(function(s){
+    presentStudents(state.currentClass).forEach(function(s){
       if(action === 'neg+') s.negative = clamp(s.negative + 1, 0, 3);
       if(action === 'neg-') s.negative = clamp(s.negative - 1, 0, 3);
       if(action === 'pos+') s.positive = s.positive + 1;
@@ -1411,7 +1614,7 @@
   }
 
   function applyBulkSkill(key){
-    var students = state.currentClass.students;
+    var students = presentStudents(state.currentClass);
     var anyOff = students.some(function(s){ return !s.skills[key]; });
     students.forEach(function(s){ s.skills[key] = anyOff; });
     afterStudentChange();
@@ -1419,7 +1622,7 @@
 
   function applyBulkRange(key, dir){
     if(OLDER_RANGE_KEYS.indexOf(key) < 0) return;
-    state.currentClass.students.forEach(function(s){
+    presentStudents(state.currentClass).forEach(function(s){
       ensureSkillsOlder(s);
       s.skillsOlder[key] = stepRange(s.skillsOlder[key], dir);
     });
@@ -1428,7 +1631,7 @@
 
   function applyBulkQuality(dir){
     var step = dir < 0 ? -1 : 1;
-    state.currentClass.students.forEach(function(s){
+    presentStudents(state.currentClass).forEach(function(s){
       ensureSkillsOlder(s);
       s.skillsOlder.quality = stepQuality(s.skillsOlder.quality, step);
     });
@@ -1437,7 +1640,7 @@
 
   function updateSkillButtonStates(){
     if(isOlderClass(state.currentClass)) return;
-    var students = state.currentClass.students;
+    var students = presentStudents(state.currentClass);
     ['songs','stories','phonics','blending'].forEach(function(key){
       var btn = document.querySelector('[data-bulk-skill="' + key + '"]');
       if(!btn) return;
@@ -1451,7 +1654,7 @@
   function renderCelebration(){
     var pane = document.getElementById('celebrationPane');
     if(!pane) return;
-    var students = state.currentClass.students;
+    var students = presentStudents(state.currentClass);
     var older = isOlderClass(state.currentClass);
 
     // Star Ninja is a milestone, not a ranking -- everyone who reaches the
@@ -1536,7 +1739,7 @@
   function toggleRewardsModal(){
     if(document.getElementById('rewardsOverlay')){ closeRewardsModal(); return; }
     var cls = state.currentClass;
-    var rowsHtml = cls.students.map(function(s){
+    var rowsHtml = presentStudents(cls).map(function(s){
       return '<div class="reward-row"><span class="reward-name">' + escapeHtml(s.name) + '</span>' +
         '<span class="reward-value">' + formatReward(computeReward(s)) + '</span></div>';
     }).join('');
@@ -1566,10 +1769,11 @@
   function exportCsv(){
     var cls = state.currentClass;
     var older = isOlderClass(cls);
+    var liveStudents = presentStudents(cls);
     var header, rows;
     if(older){
       header = ['Student Name','Positive Score','Negative Score','Vocabulary','Understanding','Quality','Interaction'];
-      rows = cls.students.map(function(s){
+      rows = liveStudents.map(function(s){
         var so = ensureSkillsOlder(s);
         return [
           csvEscape(s.name), s.positive, s.negative,
@@ -1578,7 +1782,7 @@
       });
     } else {
       header = ['Student Name','Positive Score','Negative Score','Songs & Chants','Stories & Chants','Phonics','Blending'];
-      rows = cls.students.map(function(s){
+      rows = liveStudents.map(function(s){
         return [
           csvEscape(s.name), s.positive, s.negative,
           s.skills.songs ? 'TRUE' : 'FALSE',
@@ -1969,6 +2173,7 @@
 
     cls.students.forEach(function(s){
       s.positive = 0; s.negative = 0;
+      s.absent = false;
       s.skills = { songs:false, stories:false, phonics:false, blending:false };
       if(isOlderClass(cls)) s.skillsOlder = defaultSkillsOlder();
     });
