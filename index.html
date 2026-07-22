@@ -1677,7 +1677,7 @@
   function olderDisciplineHtml(s){
     var disc = clamp(s.negative, 0, 3);
     return '<button class="older-face-chip" data-disc="' + disc + '" data-older-face="' + s.id +
-      '" title="Discipline">:(</button>';
+      '" title="Discipline — tap to cycle">:(</button>';
   }
 
   function rowTemplate(s, negativeEnabled, older){
@@ -1751,7 +1751,7 @@
       var olderFace = e.target.closest('[data-older-face]');
       if(olderFace){
         var sof = findStudent(olderFace.getAttribute('data-older-face'));
-        sof.negative = clamp(sof.negative + 1, 0, 3);
+        sof.negative = (clamp(sof.negative, 0, 3) + 1) % 4;
         afterStudentChange();
         return;
       }
