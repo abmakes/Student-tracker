@@ -222,15 +222,21 @@
   .manage-chip:active{filter:brightness(.96);}
   .manage-chip.tone-attend{font-size:11px; padding-left:2px; padding-right:2px;}
 
-  /* Attendance cycle */
-  .manage-chip.tone-present{background:var(--mint); color:#fff;}
-  .manage-chip.tone-absent{background:var(--coral); color:#fff;}
+  /* Attendance cycle — soft pastels with dark text */
+  .manage-chip.tone-present{background:#A9E39B; color:#1F4A28;}
+  .manage-chip.tone-absent{background:#FFB3AA; color:#6B2420;}
 
-  /* Complete / Effort / Quality — shared score colors */
-  .manage-chip.score-1{background:var(--coral); color:#fff;}
-  .manage-chip.score-2{background:#eab308; color:#1f2937;}
-  .manage-chip.score-3{background:#3b82f6; color:#fff;}
-  .manage-chip.score-4{background:var(--mint); color:#fff;}
+  /* Complete / Effort / Quality — shared soft score colors */
+  .manage-chip.score-1{background:#FFB3AA; color:#6B2420;}
+  .manage-chip.score-2{background:#F3E066; color:#4A3B10;}
+  .manage-chip.score-3{background:#98D3F5; color:#1A3F5C;}
+  .manage-chip.score-4{background:#A9E39B; color:#1F4A28;}
+  [data-theme="dark"] .manage-chip.tone-present{background:#294A26; color:#A9E39B;}
+  [data-theme="dark"] .manage-chip.tone-absent{background:#5C2E3D; color:#FFB3AA;}
+  [data-theme="dark"] .manage-chip.score-1{background:#5C2E3D; color:#FFB3AA;}
+  [data-theme="dark"] .manage-chip.score-2{background:#5C5322; color:#F3E066;}
+  [data-theme="dark"] .manage-chip.score-3{background:#234A66; color:#98D3F5;}
+  [data-theme="dark"] .manage-chip.score-4{background:#294A26; color:#A9E39B;}
 
   .manage-add{
     display:flex; gap:8px; align-items:stretch; margin-top:12px;
@@ -458,17 +464,23 @@
   body.age-older.skills-open .skill-zone.older-skills .older-face-chip{
     flex:1 1 0; width:auto; min-width:40px; max-width:96px; height:38px; font-size:15px;
   }
-  .older-gauge[data-step="1"]{background:rgba(20,21,31,.10); color:var(--muted);}
-  .older-gauge[data-step="2"]{background:#eab308; color:#1f2937;}
-  .older-gauge[data-step="3"]{background:var(--mint); color:#fff;}
-  [data-theme="dark"] .older-gauge[data-step="1"]{background:rgba(241,240,248,.12); color:var(--muted);}
+  .older-gauge[data-step="1"]{background:#E6E4F0; color:#4A4860;}
+  .older-gauge[data-step="2"]{background:#F3E066; color:#4A3B10;}
+  .older-gauge[data-step="3"]{background:#A9E39B; color:#1F4A28;}
+  [data-theme="dark"] .older-gauge[data-step="1"]{background:#3A3A52; color:#C8C6D8;}
+  [data-theme="dark"] .older-gauge[data-step="2"]{background:#5C5322; color:#F3E066;}
+  [data-theme="dark"] .older-gauge[data-step="3"]{background:#294A26; color:#A9E39B;}
   .older-gauge-num{position:relative; z-index:1;}
   .older-face-chip{font-size:13px;}
   body.age-older.skills-open .skill-zone.older-skills .older-face-chip{font-size:14px;}
-  .older-face-chip[data-disc="0"]{background:var(--mint); color:#fff;}
-  .older-face-chip[data-disc="1"]{background:#eab308; color:#1f2937;}
+  .older-face-chip[data-disc="0"]{background:#A9E39B; color:#1F4A28;}
+  .older-face-chip[data-disc="1"]{background:#F3E066; color:#4A3B10;}
   .older-face-chip[data-disc="2"],
-  .older-face-chip[data-disc="3"]{background:var(--coral); color:#fff;}
+  .older-face-chip[data-disc="3"]{background:#FFB3AA; color:#6B2420;}
+  [data-theme="dark"] .older-face-chip[data-disc="0"]{background:#294A26; color:#A9E39B;}
+  [data-theme="dark"] .older-face-chip[data-disc="1"]{background:#5C5322; color:#F3E066;}
+  [data-theme="dark"] .older-face-chip[data-disc="2"],
+  [data-theme="dark"] .older-face-chip[data-disc="3"]{background:#5C2E3D; color:#FFB3AA;}
   .skills-bulk-pane{
     background:var(--chrome-bg);
     border-bottom:1px solid var(--hairline);
