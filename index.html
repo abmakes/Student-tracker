@@ -420,6 +420,11 @@
   .star-zone.older-stars{
     flex:1; min-width:0; display:flex; align-items:center; gap:8px; justify-content:flex-end;
   }
+  /* Shrink the star bar when skills are open so gauges can use the freed width */
+  body.age-older.skills-open .star-zone.older-stars{flex:1 1 auto; max-width:80%;}
+  @media(min-width:900px){
+    body.age-older.skills-open .star-zone.older-stars{max-width:70%;}
+  }
   .older-progress{
     flex:1; min-width:36px; height:14px; border-radius:999px; background:var(--track-line);
     overflow:hidden; border:1px solid var(--hairline); padding:0; cursor:pointer;
@@ -438,13 +443,18 @@
     color:#fff; background:var(--gold); border-color:rgba(0,0,0,.25);
   }
   [data-theme="dark"] .older-star-badge{background:rgba(241,240,248,.10);}
-  .older-skills-wrap{display:flex; align-items:center; gap:6px; flex:none;}
+  .older-skills-wrap{display:flex; align-items:center; gap:6px; flex:none; min-width:0;}
+  body.age-older.skills-open .older-skills-wrap{flex:1 1 auto;}
   .skill-zone.older-skills{gap:6px; max-width:none; justify-content:flex-end;}
+  body.age-older.skills-open .skill-zone.older-skills{flex:1; gap:8px; min-width:0;}
   .older-gauge{
     position:relative; width:34px; height:34px; border-radius:10px;
     border:1px solid transparent; overflow:hidden; padding:0; flex:none;
     display:flex; align-items:center; justify-content:center;
     font-family:var(--font-display); font-weight:800; font-size:14px; line-height:1;
+  }
+  body.age-older.skills-open .older-gauge{
+    flex:1 1 0; width:auto; min-width:44px; max-width:96px; height:38px; font-size:15px;
   }
   .older-gauge[data-step="1"]{background:rgba(20,21,31,.10); color:var(--muted);}
   .older-gauge[data-step="2"]{background:#eab308; color:#1f2937;}
@@ -461,20 +471,33 @@
   .older-face-chip[data-disc="1"]{background:#eab308; color:#1f2937;}
   .older-face-chip[data-disc="2"],
   .older-face-chip[data-disc="3"]{background:var(--coral); color:#fff;}
+  .skills-bulk-pane{
+    background:var(--chrome-bg);
+    border-bottom:1px solid var(--hairline);
+  }
+  .skills-bulk-pane .cel-toggle{padding:8px 0;}
   .older-col-headers{
     display:flex; align-items:center; gap:8px;
     padding:4px 6px 6px; color:var(--muted);
-    font-size:9.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+    font-size:9px; font-weight:700; letter-spacing:.02em; text-transform:uppercase;
     border-bottom:1px solid var(--hairline); margin:0 8px 4px;
   }
   .older-col-headers .och-spacer{flex:0 1 auto; max-width:28%; min-width:0;}
   .older-col-headers .och-progress{flex:1; min-width:0;}
+  body.age-older.skills-open .older-col-headers .och-progress{max-width:80%; flex:1 1 auto;}
+  @media(min-width:900px){
+    body.age-older.skills-open .older-col-headers .och-progress{max-width:70%;}
+  }
   .older-col-headers .och-star{width:30px; flex:none;}
   .older-col-headers .och-skills{
-    display:flex; align-items:center; gap:6px; flex:none;
+    display:flex; align-items:flex-end; gap:8px; flex:1 1 auto; min-width:0; justify-content:flex-end;
   }
   .older-col-headers .och-skills span{
-    width:34px; text-align:center; flex:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    flex:1 1 0; min-width:44px; max-width:96px; text-align:center;
+    overflow:hidden; white-space:normal; line-height:1.15; font-size:8.5px;
+  }
+  .older-col-headers .och-skills span.och-disc{
+    flex:none; width:34px; min-width:34px; max-width:34px;
   }
   .skills-subrow.older-bulk .rbtn.skill{
     background:var(--chrome-bg); color:var(--muted); border-color:var(--hairline);
@@ -924,6 +947,10 @@
 
   // Whether the achievements strip is collapsed. Transient, starts expanded.
   var uiCelebrationCollapsed = false;
+
+  // Bulk skill toolbar accordion (only relevant while skills are visible).
+  // Starts collapsed so student values can show without the bulk button clutter.
+  var uiSkillsBulkCollapsed = true;
 
   /* ---------------- toast ---------------- */
   var toastTimer = null;
@@ -1409,7 +1436,7 @@
       '</button>';
   }
 
-  function olderSkillsSubrowHtml(){
+  function olderBulkButtonsHtml(){
     return '' +
       '<div class="skills-subrow older-bulk">' +
         '<button class="rbtn skill" data-bulk-range="vocabulary" data-dir="1" title="Raise Vocabulary for everyone">Vocab +</button>' +
@@ -1418,26 +1445,30 @@
         '<button class="rbtn skill" data-bulk-range="understanding" data-dir="-1" title="Lower Understanding for everyone">Und −</button>' +
         '<button class="rbtn skill" data-bulk-quality="1" data-dir="1" title="Raise Quality for everyone">Qual +</button>' +
         '<button class="rbtn skill" data-bulk-quality="1" data-dir="-1" title="Lower Quality for everyone">Qual −</button>' +
-        '<button class="rbtn skill" data-bulk-range="interaction" data-dir="1" title="Raise Interaction for everyone">Int +</button>' +
-        '<button class="rbtn skill" data-bulk-range="interaction" data-dir="-1" title="Lower Interaction for everyone">Int −</button>' +
+        '<button class="rbtn skill" data-bulk-range="interaction" data-dir="1" title="Raise Active for everyone">Active +</button>' +
+        '<button class="rbtn skill" data-bulk-range="interaction" data-dir="-1" title="Lower Active for everyone">Active −</button>' +
         '<button class="rbtn skill" data-bulk="neg+" title="Worse discipline for everyone">Disc +</button>' +
         '<button class="rbtn skill" data-bulk="neg-" title="Better discipline for everyone">Disc −</button>' +
-      '</div>' +
+      '</div>';
+  }
+
+  function olderColHeadersHtml(){
+    return '' +
       '<div class="older-col-headers" aria-hidden="true">' +
         '<div class="och-spacer"></div>' +
         '<div class="och-progress"></div>' +
         '<div class="och-star"></div>' +
         '<div class="och-skills">' +
-          '<span title="Vocabulary">Voc</span>' +
-          '<span title="Understanding">Und</span>' +
-          '<span title="Quality">Qual</span>' +
-          '<span title="Interaction">Int</span>' +
-          '<span title="Discipline">Disc</span>' +
+          '<span>Vocabulary</span>' +
+          '<span>Understanding</span>' +
+          '<span>Quality</span>' +
+          '<span>Active</span>' +
+          '<span class="och-disc">Discipline</span>' +
         '</div>' +
       '</div>';
   }
 
-  function kgSkillsSubrowHtml(){
+  function kgBulkButtonsHtml(){
     return '' +
       '<div class="skills-subrow">' +
         '<button class="rbtn skill" data-bulk-skill="songs" title="Set Songs &amp; Chants for everyone">🎵</button>' +
@@ -1445,6 +1476,19 @@
         '<button class="rbtn skill" data-bulk-skill="phonics" title="Set Phonics for everyone">🔤</button>' +
         '<button class="rbtn skill" data-bulk-skill="blending" title="Set Blending for everyone">🗣️</button>' +
       '</div>';
+  }
+
+  function skillsPanelHtml(older){
+    if(!uiSkillsVisible) return '';
+    var bulk = older ? olderBulkButtonsHtml() : kgBulkButtonsHtml();
+    return '' +
+      '<div class="skills-bulk-pane">' +
+        '<button type="button" class="cel-toggle" id="toggleSkillsBulkBtn">' +
+          (uiSkillsBulkCollapsed ? '▸ Bulk actions' : '▾ Bulk actions') +
+        '</button>' +
+        (uiSkillsBulkCollapsed ? '' : bulk) +
+      '</div>' +
+      (older ? olderColHeadersHtml() : '');
   }
 
   function renderTracker(){
@@ -1507,7 +1551,7 @@
         '</div>' +
       '</div>' +
 
-      (uiSkillsVisible ? (older ? olderSkillsSubrowHtml() : kgSkillsSubrowHtml()) : '') +
+      (uiSkillsVisible ? skillsPanelHtml(older) : '') +
 
       '<div class="main-area">' +
         '<div class="grid-pane">' +
@@ -1540,6 +1584,13 @@
       uiSkillsVisible = !uiSkillsVisible;
       renderTracker();
     });
+    var skillsBulkBtn = document.getElementById('toggleSkillsBulkBtn');
+    if(skillsBulkBtn){
+      skillsBulkBtn.addEventListener('click', function(){
+        uiSkillsBulkCollapsed = !uiSkillsBulkCollapsed;
+        renderTracker();
+      });
+    }
     var behaviorBtn = document.getElementById('toggleBehaviorBtn');
     if(behaviorBtn){
       behaviorBtn.addEventListener('click', function(){
