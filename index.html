@@ -447,26 +447,24 @@
   body.age-older.skills-open .older-skills-wrap{flex:1 1 auto;}
   .skill-zone.older-skills{gap:6px; max-width:none; justify-content:flex-end;}
   body.age-older.skills-open .skill-zone.older-skills{flex:1; gap:8px; min-width:0;}
-  .older-gauge{
+  .older-gauge,
+  .older-face-chip{
     position:relative; width:34px; height:34px; border-radius:10px;
     border:1px solid transparent; overflow:hidden; padding:0; flex:none;
     display:flex; align-items:center; justify-content:center;
     font-family:var(--font-display); font-weight:800; font-size:14px; line-height:1;
   }
-  body.age-older.skills-open .older-gauge{
-    flex:1 1 0; width:auto; min-width:44px; max-width:96px; height:38px; font-size:15px;
+  body.age-older.skills-open .skill-zone.older-skills .older-gauge,
+  body.age-older.skills-open .skill-zone.older-skills .older-face-chip{
+    flex:1 1 0; width:auto; min-width:40px; max-width:96px; height:38px; font-size:15px;
   }
   .older-gauge[data-step="1"]{background:rgba(20,21,31,.10); color:var(--muted);}
   .older-gauge[data-step="2"]{background:#eab308; color:#1f2937;}
   .older-gauge[data-step="3"]{background:var(--mint); color:#fff;}
   [data-theme="dark"] .older-gauge[data-step="1"]{background:rgba(241,240,248,.12); color:var(--muted);}
   .older-gauge-num{position:relative; z-index:1;}
-  .older-face-chip{
-    width:34px; height:34px; border-radius:10px;
-    border:1px solid transparent;
-    display:flex; align-items:center; justify-content:center;
-    font-size:13px; font-weight:800; line-height:1; padding:0; flex:none;
-  }
+  .older-face-chip{font-size:13px;}
+  body.age-older.skills-open .skill-zone.older-skills .older-face-chip{font-size:14px;}
   .older-face-chip[data-disc="0"]{background:var(--mint); color:#fff;}
   .older-face-chip[data-disc="1"]{background:#eab308; color:#1f2937;}
   .older-face-chip[data-disc="2"],
@@ -476,28 +474,33 @@
     border-bottom:1px solid var(--hairline);
   }
   .skills-bulk-pane .cel-toggle{padding:8px 0;}
+
+  /* Mirror .student-row layout exactly so titles sit over the skill buttons */
   .older-col-headers{
-    display:flex; align-items:center; gap:8px;
-    padding:4px 6px 6px; color:var(--muted);
-    font-size:9px; font-weight:700; letter-spacing:.02em; text-transform:uppercase;
-    border-bottom:1px solid var(--hairline); margin:0 8px 4px;
+    position:sticky; top:0; z-index:6; background:var(--paper);
+    display:flex; align-items:flex-end; gap:8px;
+    padding:6px 6px 8px; margin:0 0 2px;
+    color:var(--muted); font-size:9px; font-weight:700;
+    letter-spacing:.02em; text-transform:uppercase;
+    border-bottom:1px solid var(--hairline);
   }
-  .older-col-headers .och-spacer{flex:0 1 auto; max-width:28%; min-width:0;}
-  .older-col-headers .och-progress{flex:1; min-width:0;}
-  body.age-older.skills-open .older-col-headers .och-progress{max-width:80%; flex:1 1 auto;}
-  @media(min-width:900px){
-    body.age-older.skills-open .older-col-headers .och-progress{max-width:70%;}
+  body.age-older .older-col-headers .name-wrap{
+    flex:0 1 auto; max-width:28%; min-width:0; min-height:1px;
   }
-  .older-col-headers .och-star{width:30px; flex:none;}
-  .older-col-headers .och-skills{
-    display:flex; align-items:flex-end; gap:8px; flex:1 1 auto; min-width:0; justify-content:flex-end;
+  .older-col-headers .och-bar{
+    flex:1; min-width:36px; height:1px; visibility:hidden;
   }
-  .older-col-headers .och-skills span{
-    flex:1 1 0; min-width:44px; max-width:96px; text-align:center;
-    overflow:hidden; white-space:normal; line-height:1.15; font-size:8.5px;
+  .older-col-headers .och-badge{
+    flex:none; width:30px; height:1px; visibility:hidden;
   }
-  .older-col-headers .och-skills span.och-disc{
-    flex:none; width:34px; min-width:34px; max-width:34px;
+  .older-col-headers .och-skill{
+    flex:1 1 0; min-width:40px; max-width:96px; text-align:center;
+    overflow:hidden; line-height:1.15; white-space:nowrap; text-overflow:ellipsis;
+  }
+  .older-col-headers .lbl-abbr{display:none;}
+  @media(max-width:899px){
+    .older-col-headers .lbl-full{display:none;}
+    .older-col-headers .lbl-abbr{display:inline;}
   }
   .skills-subrow.older-bulk .rbtn.skill{
     background:var(--chrome-bg); color:var(--muted); border-color:var(--hairline);
@@ -1453,17 +1456,24 @@
   }
 
   function olderColHeadersHtml(){
+    function skillLabel(full, abbr){
+      return '<span class="och-skill"><span class="lbl-full">' + full + '</span><span class="lbl-abbr">' + abbr + '</span></span>';
+    }
     return '' +
       '<div class="older-col-headers" aria-hidden="true">' +
-        '<div class="och-spacer"></div>' +
-        '<div class="och-progress"></div>' +
-        '<div class="och-star"></div>' +
-        '<div class="och-skills">' +
-          '<span>Vocabulary</span>' +
-          '<span>Understanding</span>' +
-          '<span>Quality</span>' +
-          '<span>Active</span>' +
-          '<span class="och-disc">Discipline</span>' +
+        '<div class="name-wrap"></div>' +
+        '<div class="star-zone older-stars">' +
+          '<div class="och-bar"></div>' +
+          '<div class="och-badge"></div>' +
+        '</div>' +
+        '<div class="older-skills-wrap">' +
+          '<div class="skill-zone older-skills">' +
+            skillLabel('Vocabulary', 'Voc') +
+            skillLabel('Understanding', 'Und') +
+            skillLabel('Quality', 'Qual') +
+            skillLabel('Active', 'Act') +
+            skillLabel('Discipline', 'Disc') +
+          '</div>' +
         '</div>' +
       '</div>';
   }
@@ -1487,8 +1497,7 @@
           (uiSkillsBulkCollapsed ? '▸ Bulk actions' : '▾ Bulk actions') +
         '</button>' +
         (uiSkillsBulkCollapsed ? '' : bulk) +
-      '</div>' +
-      (older ? olderColHeadersHtml() : '');
+      '</div>';
   }
 
   function renderTracker(){
@@ -1510,6 +1519,7 @@
     // Older: never use the left discipline column — face lives at end of each row.
     var showLeftNeg = !older && !!cls.negativeEnabled;
     var rowsHtml = presentStudents(cls).map(function(s){ return rowTemplate(s, showLeftNeg, older); }).join('');
+    var rosterHtml = (older && uiSkillsVisible ? olderColHeadersHtml() : '') + rowsHtml;
 
     var leftBulk = (!older && cls.negativeEnabled) ?
       '<div class="ribbon-group">' +
@@ -1555,7 +1565,7 @@
 
       '<div class="main-area">' +
         '<div class="grid-pane">' +
-          '<div class="roster-scroll" id="rosterScroll">' + rowsHtml + '</div>' +
+          '<div class="roster-scroll" id="rosterScroll">' + rosterHtml + '</div>' +
         '</div>' +
       '</div>' +
 
@@ -1659,7 +1669,8 @@
         olderGaugeHtml(rangeToLevel(so.vocabulary), 'data-older-range="vocabulary" data-stu="' + s.id + '"', 'Vocabulary') +
         olderGaugeHtml(rangeToLevel(so.understanding), 'data-older-range="understanding" data-stu="' + s.id + '"', 'Understanding') +
         olderGaugeHtml(normalizeQuality(so.quality), 'data-older-quality="1" data-stu="' + s.id + '"', 'Quality') +
-        olderGaugeHtml(rangeToLevel(so.interaction), 'data-older-range="interaction" data-stu="' + s.id + '"', 'Interaction') +
+        olderGaugeHtml(rangeToLevel(so.interaction), 'data-older-range="interaction" data-stu="' + s.id + '"', 'Active') +
+        olderDisciplineHtml(s) +
       '</div>';
   }
 
@@ -1692,8 +1703,11 @@
 
     var skillZoneHtml = '';
     if(older){
-      var olderSkills = uiSkillsVisible ? olderSkillZoneHtml(s) : '';
-      skillZoneHtml = '<div class="older-skills-wrap">' + olderSkills + olderDisciplineHtml(s) + '</div>';
+      if(uiSkillsVisible){
+        skillZoneHtml = '<div class="older-skills-wrap">' + olderSkillZoneHtml(s) + '</div>';
+      } else {
+        skillZoneHtml = '<div class="older-skills-wrap">' + olderDisciplineHtml(s) + '</div>';
+      }
     } else if(uiSkillsVisible){
       var skillDefs = [
         {k:'songs', icon:'🎵'}, {k:'stories', icon:'📖'}, {k:'phonics', icon:'🔤'}, {k:'blending', icon:'🗣️'}
