@@ -180,37 +180,47 @@
     border-bottom:1px solid var(--hairline); background:var(--chrome-bg);
   }
   .manage-body{
-    flex:1; overflow:auto; padding:16px 8px 18px;
-    display:flex; flex-direction:column; gap:8px;
+    flex:1; overflow:auto; padding:10px 8px 18px;
+    display:flex; flex-direction:column; gap:0; min-height:0;
   }
-  .manage-list{display:flex; flex-direction:column; gap:8px;}
+  .manage-col-headers{
+    display:grid;
+    grid-template-columns:minmax(88px,1.3fr) 76px 68px 68px 68px 52px;
+    gap:6px; align-items:end;
+    padding:4px 6px 8px; margin:0 0 4px;
+    color:var(--muted); font-size:9.5px; font-weight:700;
+    letter-spacing:.04em; text-transform:uppercase;
+    border-bottom:1px solid var(--hairline); position:sticky; top:0; z-index:5;
+    background:var(--paper);
+  }
+  .manage-col-headers span{text-align:center; line-height:1.2;}
+  .manage-col-headers .mch-name{text-align:left; padding-left:4px;}
+  .manage-list{display:flex; flex-direction:column; gap:6px;}
   .manage-row{
-    display:flex; align-items:center; gap:6px;
-    padding:8px; border-radius:12px; background:var(--card-bg);
+    display:grid;
+    grid-template-columns:minmax(88px,1.3fr) 76px 68px 68px 68px 52px;
+    gap:6px; align-items:center;
+    padding:2px 6px; border-radius:12px; background:var(--card-bg);
     min-height:44px;
   }
   .manage-row.is-absent{opacity:.62;}
-  .manage-row .name-wrap{flex:0 1 110px; min-width:72px; justify-content:flex-start;}
+  .manage-row .name-wrap{min-width:0; justify-content:flex-start; padding:0;}
   .manage-row.is-absent .name-pill{text-decoration:line-through; opacity:.85;}
   .manage-row .name-pill{padding:5px 10px; font-size:14px; max-width:100%;}
   .manage-remove{
-    border:1px solid var(--hairline); border-radius:8px; padding:6px 8px;
-    background:transparent; color:var(--coral); font-size:11px; font-weight:700; cursor:pointer; flex:none;
-  }
-  .manage-controls{
-    display:flex; flex-wrap:nowrap; align-items:center; gap:5px;
-    flex:1; min-width:0; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    border:1px solid var(--hairline); border-radius:8px; padding:6px 0;
+    background:transparent; color:var(--coral); font-size:11px; font-weight:700;
+    cursor:pointer; width:100%; text-align:center;
   }
   .manage-chip{
-    flex:none; border:1px solid transparent; border-radius:8px;
-    padding:6px 9px; font-size:11.5px; font-weight:700; line-height:1.2;
-    cursor:pointer; white-space:nowrap; color:var(--ink);
+    width:100%; border:1px solid transparent; border-radius:8px;
+    padding:7px 4px; font-size:11.5px; font-weight:700; line-height:1.2;
+    cursor:pointer; white-space:nowrap; color:var(--ink); text-align:center;
     background:rgba(20,21,31,.06);
   }
   [data-theme="dark"] .manage-chip{background:rgba(241,240,248,.10);}
   .manage-chip:active{filter:brightness(.96);}
-  .manage-chip.is-muted{opacity:.4;}
-  .manage-chip .chip-key{opacity:.72; font-weight:600; margin-right:4px;}
+  .manage-chip.tone-attend{font-size:11px; padding-left:2px; padding-right:2px;}
 
   /* Attendance cycle */
   .manage-chip.tone-present{background:var(--mint); color:#fff;}
@@ -223,7 +233,7 @@
   .manage-chip.score-4{background:var(--mint); color:#fff;}
 
   .manage-add{
-    display:flex; gap:8px; align-items:stretch; margin-top:4px;
+    display:flex; gap:8px; align-items:stretch; margin-top:12px;
     padding:10px; border:1px dashed var(--track-line); border-radius:12px;
   }
   .manage-add input{
@@ -244,6 +254,15 @@
     cursor:pointer;
   }
   .manage-empty{padding:18px; text-align:center; color:var(--muted); font-size:13.5px;}
+  @media(max-width:420px){
+    .manage-col-headers,
+    .manage-row{
+      grid-template-columns:minmax(72px,1.1fr) 64px 58px 58px 58px 44px;
+      gap:4px;
+    }
+    .manage-chip{font-size:10.5px; padding:6px 2px;}
+    .manage-remove{font-size:10px;}
+  }
   .empty-state{
     padding:22px 16px; text-align:center; color:var(--muted); font-size:13.5px;
     border:3px dashed var(--track-line); border-radius:14px;
@@ -1111,11 +1130,9 @@
 
     function cycleBtn(key, value){
       var score = normalizeLmsScore(value);
-      var label = key.charAt(0).toUpperCase() + key.slice(1);
       return '<button type="button" class="manage-chip score-' + score +
-        '" data-hw-cycle="' + key + '" data-stu="' + s.id + '">' +
-        '<span class="chip-key">' + label + '</span>' + lmsLabel(score) +
-        '</button>';
+        '" data-hw-cycle="' + key + '" data-stu="' + s.id + '" title="' +
+        key.charAt(0).toUpperCase() + key.slice(1) + '">' + lmsLabel(score) + '</button>';
     }
 
     return '' +
@@ -1124,15 +1141,13 @@
           '<button type="button" class="name-pill" data-manage-color="' + s.id + '" ' + pillStyle +
             ' title="Tap to change color">' + escapeHtml(s.name) + '</button>' +
         '</div>' +
-        '<div class="manage-controls" role="group" aria-label="Attendance and homework for ' + escapeHtml(s.name) + '">' +
-          '<button type="button" class="manage-chip ' + (absent ? 'tone-absent' : 'tone-present') +
-            '" data-attend-cycle="' + s.id + '" title="Tap to toggle attendance">' +
-            (absent ? 'Absent' : 'Present') + '</button>' +
-          cycleBtn('complete', hw.complete) +
-          cycleBtn('effort', hw.effort) +
-          cycleBtn('quality', hw.quality) +
-        '</div>' +
-        '<button type="button" class="manage-remove" data-remove="' + s.id + '">Remove</button>' +
+        '<button type="button" class="manage-chip tone-attend ' + (absent ? 'tone-absent' : 'tone-present') +
+          '" data-attend-cycle="' + s.id + '" title="Tap to toggle attendance">' +
+          (absent ? 'Absent' : 'Present') + '</button>' +
+        cycleBtn('complete', hw.complete) +
+        cycleBtn('effort', hw.effort) +
+        cycleBtn('quality', hw.quality) +
+        '<button type="button" class="manage-remove" data-remove="' + s.id + '">✕</button>' +
       '</div>';
   }
 
@@ -1147,7 +1162,16 @@
     if(!roster.students.length){
       rowsHtml = '<div class="manage-empty">No students yet — add one below.</div>';
     } else {
-      rowsHtml = '<div class="manage-list">' + roster.students.map(manageRowHtml).join('') + '</div>';
+      rowsHtml =
+        '<div class="manage-col-headers" aria-hidden="true">' +
+          '<span class="mch-name">Name</span>' +
+          '<span>Present</span>' +
+          '<span>Complete</span>' +
+          '<span>Effort</span>' +
+          '<span>Quality</span>' +
+          '<span></span>' +
+        '</div>' +
+        '<div class="manage-list">' + roster.students.map(manageRowHtml).join('') + '</div>';
     }
 
     root.innerHTML =
