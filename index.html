@@ -185,26 +185,25 @@
   }
   .manage-list{display:flex; flex-direction:column; gap:8px;}
   .manage-row{
-    display:flex; flex-direction:column; gap:8px;
-    padding:8px 8px 10px; border-radius:12px; background:var(--card-bg);
+    display:flex; align-items:center; gap:6px;
+    padding:8px; border-radius:12px; background:var(--card-bg);
+    min-height:44px;
   }
   .manage-row.is-absent{opacity:.62;}
-  .manage-row-top{
-    display:flex; align-items:center; gap:6px; min-height:40px;
-  }
-  .manage-row .name-wrap{flex:1; min-width:0; justify-content:flex-start;}
+  .manage-row .name-wrap{flex:0 1 110px; min-width:72px; justify-content:flex-start;}
   .manage-row.is-absent .name-pill{text-decoration:line-through; opacity:.85;}
+  .manage-row .name-pill{padding:5px 10px; font-size:14px; max-width:100%;}
   .manage-remove{
-    border:1px solid var(--hairline); border-radius:8px; padding:6px 9px;
-    background:transparent; color:var(--coral); font-size:11.5px; font-weight:700; cursor:pointer; flex:none;
+    border:1px solid var(--hairline); border-radius:8px; padding:6px 8px;
+    background:transparent; color:var(--coral); font-size:11px; font-weight:700; cursor:pointer; flex:none;
   }
   .manage-controls{
-    display:flex; flex-wrap:nowrap; align-items:center; gap:6px;
-    overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;
+    display:flex; flex-wrap:nowrap; align-items:center; gap:5px;
+    flex:1; min-width:0; overflow-x:auto; -webkit-overflow-scrolling:touch;
   }
   .manage-chip{
     flex:none; border:1px solid transparent; border-radius:8px;
-    padding:6px 10px; font-size:11.5px; font-weight:700; line-height:1.2;
+    padding:6px 9px; font-size:11.5px; font-weight:700; line-height:1.2;
     cursor:pointer; white-space:nowrap; color:var(--ink);
     background:rgba(20,21,31,.06);
   }
@@ -213,19 +212,14 @@
   .manage-chip.is-muted{opacity:.4;}
   .manage-chip .chip-key{opacity:.72; font-weight:600; margin-right:4px;}
 
-  /* Attendance */
-  .manage-chip.tone-present{color:#0f6b4c; background:rgba(37,184,137,.14);}
-  .manage-chip.tone-present.on{background:var(--mint); color:#fff;}
-  .manage-chip.tone-absent{color:#b42318; background:rgba(255,93,93,.14);}
-  .manage-chip.tone-absent.on{background:var(--coral); color:#fff;}
+  /* Attendance cycle */
+  .manage-chip.tone-present{background:var(--mint); color:#fff;}
+  .manage-chip.tone-absent{background:var(--coral); color:#fff;}
 
-  /* Homework status */
-  .manage-chip.tone-hw-none{color:#5b6472; background:rgba(91,100,114,.12);}
-  .manage-chip.tone-hw-none.on{background:#6b7280; color:#fff;}
-  .manage-chip.tone-hw-inc{color:#9a6700; background:rgba(234,179,8,.16);}
-  .manage-chip.tone-hw-inc.on{background:#eab308; color:#1f2937;}
-  .manage-chip.tone-hw-done{color:#0f6b4c; background:rgba(37,184,137,.14);}
-  .manage-chip.tone-hw-done.on{background:var(--mint); color:#fff;}
+  /* Homework status cycle */
+  .manage-chip.tone-hw-none{background:#6b7280; color:#fff;}
+  .manage-chip.tone-hw-inc{background:#eab308; color:#1f2937;}
+  .manage-chip.tone-hw-done{background:var(--mint); color:#fff;}
 
   /* LMS cycle chips — family tint + score strength */
   .manage-chip.tone-complete{color:#1d4ed8; background:rgba(59,130,246,.14);}
@@ -1137,6 +1131,12 @@
     renderClassManage();
   }
 
+  function stepHomeworkStatus(value){
+    var idx = HW_STATUSES.indexOf(normalizeHomeworkStatus(value));
+    if(idx < 0) idx = 0;
+    return HW_STATUSES[(idx + 1) % HW_STATUSES.length];
+  }
+
   function manageRowHtml(s){
     var absent = !!s.absent;
     var hw = ensureHomework(s);
@@ -1145,12 +1145,7 @@
     var pillColor = palette[colorIndex];
     var pillStyle = 'style="--pill-color:' + pillColor.bg + ';"';
     var ratingsDisabled = hw.status === 'none';
-
     var hwTone = { none:'tone-hw-none', incomplete:'tone-hw-inc', complete:'tone-hw-done' };
-    var statusChips = HW_STATUSES.map(function(st){
-      return '<button type="button" class="manage-chip ' + hwTone[st] + (hw.status === st ? ' on' : '') +
-        '" data-hw-status="' + st + '" data-stu="' + s.id + '">' + HW_STATUS_LABELS[st] + '</button>';
-    }).join('');
 
     function cycleBtn(key, value){
       var score = normalizeLmsScore(value);
@@ -1165,23 +1160,22 @@
 
     return '' +
       '<div class="manage-row' + (absent ? ' is-absent' : '') + '" data-stu="' + s.id + '">' +
-        '<div class="manage-row-top">' +
-          '<div class="name-wrap">' +
-            '<button type="button" class="name-pill" data-manage-color="' + s.id + '" ' + pillStyle +
-              ' title="Tap to change color">' + escapeHtml(s.name) + '</button>' +
-          '</div>' +
-          '<button type="button" class="manage-remove" data-remove="' + s.id + '">Remove</button>' +
+        '<div class="name-wrap">' +
+          '<button type="button" class="name-pill" data-manage-color="' + s.id + '" ' + pillStyle +
+            ' title="Tap to change color">' + escapeHtml(s.name) + '</button>' +
         '</div>' +
         '<div class="manage-controls" role="group" aria-label="Attendance and homework for ' + escapeHtml(s.name) + '">' +
-          '<button type="button" class="manage-chip tone-present' + (!absent ? ' on' : '') +
-            '" data-attend="present" data-stu="' + s.id + '">Present</button>' +
-          '<button type="button" class="manage-chip tone-absent' + (absent ? ' on' : '') +
-            '" data-attend="absent" data-stu="' + s.id + '">Absent</button>' +
-          statusChips +
+          '<button type="button" class="manage-chip ' + (absent ? 'tone-absent' : 'tone-present') +
+            '" data-attend-cycle="' + s.id + '" title="Tap to toggle attendance">' +
+            (absent ? 'Absent' : 'Present') + '</button>' +
+          '<button type="button" class="manage-chip ' + hwTone[hw.status] +
+            '" data-hw-status-cycle="' + s.id + '" title="Tap to cycle homework">' +
+            HW_STATUS_LABELS[hw.status] + '</button>' +
           cycleBtn('complete', hw.complete) +
           cycleBtn('effort', hw.effort) +
           cycleBtn('quality', hw.quality) +
         '</div>' +
+        '<button type="button" class="manage-remove" data-remove="' + s.id + '">Remove</button>' +
       '</div>';
   }
 
@@ -1252,24 +1246,22 @@
       });
     });
 
-    root.querySelectorAll('[data-attend]').forEach(function(btn){
+    root.querySelectorAll('[data-attend-cycle]').forEach(function(btn){
       btn.addEventListener('click', async function(){
-        var stuId = btn.getAttribute('data-stu');
-        var markAbsent = btn.getAttribute('data-attend') === 'absent';
-        var student = roster.students.find(function(s){ return s.id === stuId; });
+        var student = roster.students.find(function(s){ return s.id === btn.getAttribute('data-attend-cycle'); });
         if(!student) return;
-        student.absent = markAbsent;
+        student.absent = !student.absent;
         await persistManagedRoster();
         renderClassManage();
       });
     });
 
-    root.querySelectorAll('[data-hw-status]').forEach(function(btn){
+    root.querySelectorAll('[data-hw-status-cycle]').forEach(function(btn){
       btn.addEventListener('click', async function(){
-        var student = roster.students.find(function(s){ return s.id === btn.getAttribute('data-stu'); });
+        var student = roster.students.find(function(s){ return s.id === btn.getAttribute('data-hw-status-cycle'); });
         if(!student) return;
         var hw = ensureHomework(student);
-        hw.status = normalizeHomeworkStatus(btn.getAttribute('data-hw-status'));
+        hw.status = stepHomeworkStatus(hw.status);
         await persistManagedRoster();
         renderClassManage();
       });
