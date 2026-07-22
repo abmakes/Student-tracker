@@ -1164,7 +1164,7 @@
         '<div class="manage-title">' + (isStart ? 'Start of class · ' : 'Manage · ') + escapeHtml(roster.className) + '</div>' +
         '<div class="header-actions" style="width:34px"></div>' +
       '</div>' +
-      (isStart ? '<div class="manage-hint">Mark who is present, check homework, then continue to the tracker.</div>' : '') +
+      (isStart ? '<div class="manage-hint">Mark who is present, set homework Complete / Effort / Quality, then continue.</div>' : '') +
       '<div class="manage-body">' +
         rowsHtml +
         '<div class="manage-add">' +
@@ -1918,18 +1918,18 @@
     var liveStudents = presentStudents(cls);
     var header, rows;
     if(older){
-      header = ['Student Name','Positive Score','Negative Score','Vocabulary','Understanding','Quality','Interaction','Homework','HW Complete','HW Effort','HW Quality'];
+      header = ['Student Name','Positive Score','Negative Score','Vocabulary','Understanding','Quality','Interaction','Complete','Effort','HW Quality'];
       rows = liveStudents.map(function(s){
         var so = ensureSkillsOlder(s);
         var hw = ensureHomework(s);
         return [
           csvEscape(s.name), s.positive, s.negative,
           so.vocabulary, so.understanding, QUALITY_LABELS[so.quality], so.interaction,
-          HW_STATUS_LABELS[hw.status], lmsLabel(hw.complete), lmsLabel(hw.effort), lmsLabel(hw.quality)
+          lmsLabel(hw.complete), lmsLabel(hw.effort), lmsLabel(hw.quality)
         ].join(',');
       });
     } else {
-      header = ['Student Name','Positive Score','Negative Score','Songs & Chants','Stories & Chants','Phonics','Blending','Homework','HW Complete','HW Effort','HW Quality'];
+      header = ['Student Name','Positive Score','Negative Score','Songs & Chants','Stories & Chants','Phonics','Blending','Complete','Effort','HW Quality'];
       rows = liveStudents.map(function(s){
         var hw = ensureHomework(s);
         return [
@@ -1938,7 +1938,7 @@
           s.skills.stories ? 'TRUE' : 'FALSE',
           s.skills.phonics ? 'TRUE' : 'FALSE',
           s.skills.blending ? 'TRUE' : 'FALSE',
-          HW_STATUS_LABELS[hw.status], lmsLabel(hw.complete), lmsLabel(hw.effort), lmsLabel(hw.quality)
+          lmsLabel(hw.complete), lmsLabel(hw.effort), lmsLabel(hw.quality)
         ].join(',');
       });
     }
@@ -2352,7 +2352,6 @@
           studentName: s.name,
           absent: !!s.absent,
           homework: {
-            status: hw.status,
             complete: hw.complete,
             effort: hw.effort,
             quality: hw.quality,
