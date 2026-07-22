@@ -1828,7 +1828,8 @@
     var cls = state.currentClass;
     var older = isOlderClass(cls);
     var showLeftNeg = !older && !!cls.negativeEnabled;
-    scroll.innerHTML = presentStudents(cls).map(function(s){ return rowTemplate(s, showLeftNeg, older); }).join('');
+    var rows = presentStudents(cls).map(function(s){ return rowTemplate(s, showLeftNeg, older); }).join('');
+    scroll.innerHTML = (older && uiSkillsVisible ? olderColHeadersHtml() : '') + rows;
     scroll.scrollTop = scrollTop;
     updateSkillButtonStates();
   }
