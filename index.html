@@ -423,32 +423,25 @@
   .skill-zone.older-skills{gap:6px; max-width:none; justify-content:flex-end;}
   .older-gauge{
     position:relative; width:34px; height:34px; border-radius:10px;
-    border:1px solid var(--hairline); background:var(--card-bg-soft);
-    overflow:hidden; padding:0; flex:none;
+    border:1px solid transparent; overflow:hidden; padding:0; flex:none;
     display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:800; font-size:14px; line-height:1;
   }
-  .older-gauge-fill{
-    position:absolute; left:0; right:0; bottom:0; height:33%;
-    background:rgba(108,74,182,.28); pointer-events:none;
-  }
-  .older-gauge[data-level="2"] .older-gauge-fill{height:33%; background:rgba(138,136,163,.28);}
-  .older-gauge[data-level="3"] .older-gauge-fill{height:66%; background:rgba(37,184,137,.32);}
-  .older-gauge[data-level="4"] .older-gauge-fill{height:100%; background:rgba(255,182,39,.45);}
-  .older-gauge[data-level="4"]{
-    box-shadow:0 0 0 2px rgba(255,182,39,.35), 0 0 10px rgba(255,182,39,.45);
-    border-color:var(--gold);
-  }
-  .older-gauge-face{
-    position:relative; z-index:1; font-size:15px; line-height:1;
-    filter:grayscale(.15); opacity:.85;
-  }
-  .older-gauge[data-level="4"] .older-gauge-face{filter:none; opacity:1;}
+  .older-gauge[data-step="1"]{background:rgba(20,21,31,.10); color:var(--muted);}
+  .older-gauge[data-step="2"]{background:#eab308; color:#1f2937;}
+  .older-gauge[data-step="3"]{background:var(--mint); color:#fff;}
+  [data-theme="dark"] .older-gauge[data-step="1"]{background:rgba(241,240,248,.12); color:var(--muted);}
+  .older-gauge-num{position:relative; z-index:1;}
   .older-face-chip{
     width:34px; height:34px; border-radius:10px;
-    border:1px solid var(--hairline); background:var(--card-bg-soft);
+    border:1px solid transparent;
     display:flex; align-items:center; justify-content:center;
-    font-size:16px; line-height:1; padding:0; flex:none; opacity:.85;
+    font-size:13px; font-weight:800; line-height:1; padding:0; flex:none;
   }
+  .older-face-chip[data-disc="0"]{background:var(--mint); color:#fff;}
+  .older-face-chip[data-disc="1"]{background:#eab308; color:#1f2937;}
+  .older-face-chip[data-disc="2"],
+  .older-face-chip[data-disc="3"]{background:var(--coral); color:#fff;}
   .older-col-headers{
     display:flex; align-items:center; gap:8px;
     padding:4px 6px 6px; color:var(--muted);
@@ -1376,17 +1369,19 @@
     return 2;
   }
 
-  function levelFace(level){
-    if(level >= 4) return '😊';
-    if(level >= 3) return '😐';
-    return '🙁';
+  // Older skill gauges are three steps: Fair/Good/Excellent → show 1 / 2 / 3.
+  function lmsLevelToStep(level){
+    var n = Number(level);
+    if(n >= 4) return 3;
+    if(n >= 3) return 2;
+    return 1;
   }
 
   function olderGaugeHtml(level, attrs, title){
+    var step = lmsLevelToStep(level);
     return '' +
-      '<button class="older-gauge" data-level="' + level + '" ' + attrs + ' title="' + title + '">' +
-        '<span class="older-gauge-fill"></span>' +
-        '<span class="older-gauge-face">' + levelFace(level) + '</span>' +
+      '<button class="older-gauge" data-level="' + level + '" data-step="' + step + '" ' + attrs + ' title="' + title + '">' +
+        '<span class="older-gauge-num">' + step + '</span>' +
       '</button>';
   }
 
@@ -1594,9 +1589,9 @@
   }
 
   function olderDisciplineHtml(s){
-    var faces = ['😊','😐','🙁','😢'];
-    var face = faces[clamp(s.negative,0,3)];
-    return '<button class="older-face-chip" data-older-face="' + s.id + '" title="Discipline">' + face + '</button>';
+    var disc = clamp(s.negative, 0, 3);
+    return '<button class="older-face-chip" data-disc="' + disc + '" data-older-face="' + s.id +
+      '" title="Discipline">:(</button>';
   }
 
   function rowTemplate(s, negativeEnabled, older){
