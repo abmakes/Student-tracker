@@ -194,44 +194,56 @@
   }
   .manage-row .name-wrap{flex:1; min-width:0; justify-content:flex-start;}
   .manage-row.is-absent .name-pill{text-decoration:line-through; opacity:.85;}
-  .manage-attendance{
-    display:inline-flex; border:1px solid var(--hairline); border-radius:8px; overflow:hidden; flex:none;
-  }
-  .manage-attendance button{
-    border:0; background:transparent; padding:6px 9px; font-size:11.5px; font-weight:700;
-    color:var(--muted); cursor:pointer;
-  }
-  .manage-attendance button + button{border-left:1px solid var(--hairline);}
-  .manage-attendance button.active-present{background:var(--mint); color:#fff;}
-  .manage-attendance button.active-absent{background:var(--coral); color:#fff;}
   .manage-remove{
     border:1px solid var(--hairline); border-radius:8px; padding:6px 9px;
-    background:var(--card-bg); color:var(--coral); font-size:11.5px; font-weight:700; cursor:pointer; flex:none;
+    background:transparent; color:var(--coral); font-size:11.5px; font-weight:700; cursor:pointer; flex:none;
   }
-  .manage-hw-row{
-    display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding-left:2px;
+  .manage-controls{
+    display:flex; flex-wrap:nowrap; align-items:center; gap:6px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;
   }
-  .manage-hw-label{
-    font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
-    color:var(--muted); margin-right:2px;
+  .manage-chip{
+    flex:none; border:1px solid transparent; border-radius:8px;
+    padding:6px 10px; font-size:11.5px; font-weight:700; line-height:1.2;
+    cursor:pointer; white-space:nowrap; color:var(--ink);
+    background:rgba(20,21,31,.06);
   }
-  .manage-seg{
-    display:inline-flex; border:1px solid var(--hairline); border-radius:8px; overflow:hidden;
-  }
-  .manage-seg button{
-    border:0; background:transparent; padding:5px 8px; font-size:11px; font-weight:700;
-    color:var(--muted); cursor:pointer;
-  }
-  .manage-seg button + button{border-left:1px solid var(--hairline);}
-  .manage-seg button.on{background:var(--ink); color:var(--paper);}
-  .manage-cycle{
-    border:1px solid var(--hairline); border-radius:8px; background:var(--card-bg);
-    padding:5px 8px; font-size:11.5px; font-weight:700; color:var(--ink); cursor:pointer;
-    display:inline-flex; align-items:center; gap:4px; white-space:nowrap;
-  }
-  .manage-cycle:active{background:var(--hairline);}
-  .manage-cycle .cycle-key{color:var(--muted); font-weight:600;}
-  .manage-cycle.is-muted{opacity:.45;}
+  [data-theme="dark"] .manage-chip{background:rgba(241,240,248,.10);}
+  .manage-chip:active{filter:brightness(.96);}
+  .manage-chip.is-muted{opacity:.4;}
+  .manage-chip .chip-key{opacity:.72; font-weight:600; margin-right:4px;}
+
+  /* Attendance */
+  .manage-chip.tone-present{color:#0f6b4c; background:rgba(37,184,137,.14);}
+  .manage-chip.tone-present.on{background:var(--mint); color:#fff;}
+  .manage-chip.tone-absent{color:#b42318; background:rgba(255,93,93,.14);}
+  .manage-chip.tone-absent.on{background:var(--coral); color:#fff;}
+
+  /* Homework status */
+  .manage-chip.tone-hw-none{color:#5b6472; background:rgba(91,100,114,.12);}
+  .manage-chip.tone-hw-none.on{background:#6b7280; color:#fff;}
+  .manage-chip.tone-hw-inc{color:#9a6700; background:rgba(234,179,8,.16);}
+  .manage-chip.tone-hw-inc.on{background:#eab308; color:#1f2937;}
+  .manage-chip.tone-hw-done{color:#0f6b4c; background:rgba(37,184,137,.14);}
+  .manage-chip.tone-hw-done.on{background:var(--mint); color:#fff;}
+
+  /* LMS cycle chips — family tint + score strength */
+  .manage-chip.tone-complete{color:#1d4ed8; background:rgba(59,130,246,.14);}
+  .manage-chip.tone-effort{color:#7c3aed; background:rgba(139,92,246,.14);}
+  .manage-chip.tone-quality{color:#b45309; background:rgba(245,158,11,.16);}
+  .manage-chip.tone-complete.score-1,
+  .manage-chip.tone-effort.score-1,
+  .manage-chip.tone-quality.score-1{background:rgba(255,93,93,.18); color:#b42318;}
+  .manage-chip.tone-complete.score-2{background:rgba(59,130,246,.18); color:#1d4ed8;}
+  .manage-chip.tone-effort.score-2{background:rgba(139,92,246,.18); color:#7c3aed;}
+  .manage-chip.tone-quality.score-2{background:rgba(245,158,11,.20); color:#b45309;}
+  .manage-chip.tone-complete.score-3{background:rgba(37,184,137,.22); color:#0f6b4c;}
+  .manage-chip.tone-effort.score-3{background:rgba(37,184,137,.22); color:#0f6b4c;}
+  .manage-chip.tone-quality.score-3{background:rgba(37,184,137,.22); color:#0f6b4c;}
+  .manage-chip.tone-complete.score-4{background:#3b82f6; color:#fff;}
+  .manage-chip.tone-effort.score-4{background:#8b5cf6; color:#fff;}
+  .manage-chip.tone-quality.score-4{background:#f59e0b; color:#1f2937;}
+
   .manage-add{
     display:flex; gap:8px; align-items:stretch; margin-top:4px;
     padding:10px; border:1px dashed var(--track-line); border-radius:12px;
@@ -1134,17 +1146,21 @@
     var pillStyle = 'style="--pill-color:' + pillColor.bg + ';"';
     var ratingsDisabled = hw.status === 'none';
 
-    var statusSeg = HW_STATUSES.map(function(st){
-      return '<button type="button" data-hw-status="' + st + '" data-stu="' + s.id + '"' +
-        (hw.status === st ? ' class="on"' : '') + '>' + HW_STATUS_LABELS[st] + '</button>';
+    var hwTone = { none:'tone-hw-none', incomplete:'tone-hw-inc', complete:'tone-hw-done' };
+    var statusChips = HW_STATUSES.map(function(st){
+      return '<button type="button" class="manage-chip ' + hwTone[st] + (hw.status === st ? ' on' : '') +
+        '" data-hw-status="' + st + '" data-stu="' + s.id + '">' + HW_STATUS_LABELS[st] + '</button>';
     }).join('');
 
     function cycleBtn(key, value){
-      return '<button type="button" class="manage-cycle' + (ratingsDisabled ? ' is-muted' : '') +
+      var score = normalizeLmsScore(value);
+      var label = key.charAt(0).toUpperCase() + key.slice(1);
+      return '<button type="button" class="manage-chip tone-' + key + ' score-' + score +
+        (ratingsDisabled ? ' is-muted' : '') +
         '" data-hw-cycle="' + key + '" data-stu="' + s.id + '"' +
         (ratingsDisabled ? ' disabled' : '') + '>' +
-        '<span class="cycle-key">' + key.charAt(0).toUpperCase() + key.slice(1) + '</span>' +
-        '<span>' + lmsLabel(value) + '</span></button>';
+        '<span class="chip-key">' + label + '</span>' + lmsLabel(score) +
+        '</button>';
     }
 
     return '' +
@@ -1154,17 +1170,14 @@
             '<button type="button" class="name-pill" data-manage-color="' + s.id + '" ' + pillStyle +
               ' title="Tap to change color">' + escapeHtml(s.name) + '</button>' +
           '</div>' +
-          '<div class="manage-attendance" role="group" aria-label="Attendance for ' + escapeHtml(s.name) + '">' +
-            '<button type="button" data-attend="present" data-stu="' + s.id + '"' + (!absent ? ' class="active-present"' : '') + '>Present</button>' +
-            '<button type="button" data-attend="absent" data-stu="' + s.id + '"' + (absent ? ' class="active-absent"' : '') + '>Absent</button>' +
-          '</div>' +
           '<button type="button" class="manage-remove" data-remove="' + s.id + '">Remove</button>' +
         '</div>' +
-        '<div class="manage-hw-row">' +
-          '<span class="manage-hw-label">Homework</span>' +
-          '<div class="manage-seg">' + statusSeg + '</div>' +
-        '</div>' +
-        '<div class="manage-hw-row">' +
+        '<div class="manage-controls" role="group" aria-label="Attendance and homework for ' + escapeHtml(s.name) + '">' +
+          '<button type="button" class="manage-chip tone-present' + (!absent ? ' on' : '') +
+            '" data-attend="present" data-stu="' + s.id + '">Present</button>' +
+          '<button type="button" class="manage-chip tone-absent' + (absent ? ' on' : '') +
+            '" data-attend="absent" data-stu="' + s.id + '">Absent</button>' +
+          statusChips +
           cycleBtn('complete', hw.complete) +
           cycleBtn('effort', hw.effort) +
           cycleBtn('quality', hw.quality) +
