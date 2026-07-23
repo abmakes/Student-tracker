@@ -335,7 +335,15 @@
   .rbtn.skill{padding:5px 7px; font-size:14px; color:var(--ink);}
   .rbtn.skill.all-on{background:var(--ink); border-color:var(--ink);}
   .rbtn.skills-vis{font-weight:700; color:var(--ink);}
-  .rbtn.skills-vis.on{background:var(--ink); color:var(--paper);}
+  .rbtn.skills-vis.on{
+    background:var(--card-bg); color:var(--ink);
+    border-color:rgba(20,21,31,.42);
+    box-shadow:inset 0 0 0 1px rgba(20,21,31,.12);
+  }
+  [data-theme="dark"] .rbtn.skills-vis.on{
+    border-color:rgba(241,240,248,.45);
+    box-shadow:inset 0 0 0 1px rgba(241,240,248,.14);
+  }
   .rbtn.behavior-toggle.off{color:var(--muted); font-style:italic;}
   .ribbon-star{width:12px; height:12px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linejoin:round; flex:none;}
 
@@ -437,22 +445,24 @@
 
   /* Older-class progress star + glass-fill skill gauges */
   body.age-older .student-row{
-    height:auto; min-height:48px; padding:6px 6px; gap:8px;
+    height:auto; min-height:48px; padding:6px 6px; gap:6px;
   }
   body.age-older .name-wrap{
-    flex:0 0 28%; width:28%; max-width:28%; min-width:0;
+    flex:0 1 auto; width:auto; max-width:28%; min-width:0;
     justify-content:flex-start;
   }
   .star-zone.older-stars{
-    flex:1; min-width:0; display:flex; align-items:center; gap:8px; justify-content:flex-end;
+    flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:6px; justify-content:flex-end;
   }
-  /* Shrink the star bar when skills are open so gauges can use the freed width */
-  body.age-older.skills-open .star-zone.older-stars{flex:1 1 auto; max-width:80%;}
-  @media(min-width:900px){
-    body.age-older.skills-open .star-zone.older-stars{max-width:70%;}
+  /* Skills open: keep gauges compact so the star range bar can use the leftover width */
+  body.age-older.skills-open .name-wrap{
+    flex:0 1 auto; width:auto; max-width:104px; min-width:56px;
+  }
+  body.age-older.skills-open .star-zone.older-stars{
+    flex:1 1 auto; min-width:64px; max-width:none;
   }
   .older-progress{
-    flex:1; min-width:36px; height:14px; border-radius:999px; background:var(--track-line);
+    flex:1 1 auto; min-width:48px; height:14px; border-radius:999px; background:var(--track-line);
     overflow:hidden; border:1px solid var(--hairline); padding:0; cursor:pointer;
   }
   .older-progress > span{
@@ -472,10 +482,10 @@
     box-shadow:0 0 0 2px rgba(255,182,39,.45), 0 0 14px rgba(255,182,39,.75);
   }
   [data-theme="dark"] .older-star-badge{background:rgba(241,240,248,.10); color:var(--ink);}
-  .older-skills-wrap{display:flex; align-items:center; gap:6px; flex:none; min-width:0;}
-  body.age-older.skills-open .older-skills-wrap{flex:1 1 auto; min-width:0;}
-  .skill-zone.older-skills{gap:6px; max-width:none; justify-content:flex-end;}
-  body.age-older.skills-open .skill-zone.older-skills{flex:1; gap:6px; min-width:0;}
+  .older-skills-wrap{display:flex; align-items:center; gap:4px; flex:none; min-width:0;}
+  body.age-older.skills-open .older-skills-wrap{flex:0 0 auto; min-width:0;}
+  .skill-zone.older-skills{gap:4px; max-width:none; justify-content:flex-end;}
+  body.age-older.skills-open .skill-zone.older-skills{flex:0 0 auto; gap:4px; min-width:0;}
   .older-gauge,
   .older-face-chip{
     position:relative; width:36px; height:32px; border-radius:10px;
@@ -486,10 +496,31 @@
   }
   [data-theme="dark"] .older-gauge,
   [data-theme="dark"] .older-face-chip{background:rgba(241,240,248,.10);}
+  /* Default skills-open size stays at 36px so narrow/sidebar layouts don't crush the star bar */
   body.age-older.skills-open .skill-zone.older-skills .older-gauge,
-  body.age-older.skills-open .skill-zone.older-skills .older-face-chip,
+  body.age-older.skills-open .skill-zone.older-skills .older-face-chip{
+    flex:0 0 36px; width:36px; min-width:36px; max-width:36px; height:32px;
+  }
   body.age-older.skills-open .older-col-headers .och-skill{
-    flex:1 1 0; width:auto; min-width:36px; max-width:80px; height:32px;
+    flex:0 0 36px; width:36px; min-width:36px; max-width:36px;
+  }
+  @media(min-width:700px){
+    body.age-older.skills-open .skill-zone.older-skills .older-gauge,
+    body.age-older.skills-open .skill-zone.older-skills .older-face-chip{
+      flex:1 1 0; width:auto; min-width:36px; max-width:64px;
+    }
+    body.age-older.skills-open .older-col-headers .och-skill{
+      flex:1 1 0; width:auto; min-width:36px; max-width:64px;
+    }
+    body.age-older.skills-open .older-skills-wrap,
+    body.age-older.skills-open .skill-zone.older-skills{flex:0 1 auto;}
+  }
+  @media(min-width:980px){
+    body.age-older.skills-open .skill-zone.older-skills .older-gauge,
+    body.age-older.skills-open .skill-zone.older-skills .older-face-chip,
+    body.age-older.skills-open .older-col-headers .och-skill{
+      max-width:80px;
+    }
   }
   body.age-older.skills-open .skill-zone.older-skills .older-gauge{font-size:13px; color:var(--ink);}
   body.age-older.skills-open .skill-zone.older-skills .older-face-chip{font-size:16px;}
@@ -596,42 +627,58 @@
   }
   .skills-bulk-pane .cel-toggle{padding:8px 0;}
 
-  /* Mirror .student-row layout exactly so titles sit over the skill buttons */
+  /* Mirror .student-row layout horizontally; keep the strip as tall as the labels */
   .older-col-headers{
-    position:sticky; top:0; z-index:6; background:var(--paper);
-    display:flex; align-items:flex-end; gap:8px;
-    padding:6px 6px 8px; margin:0 0 2px;
+    position:sticky; top:0; z-index:6;
+    display:flex; align-items:center; gap:6px;
+    padding:4px 8px; margin:0 0 6px;
     color:var(--muted); font-size:9px; font-weight:700;
     letter-spacing:.02em; text-transform:uppercase;
-    border-bottom:1px solid var(--hairline);
-  }
-  body.age-older .student-row,
-  body.age-older .older-col-headers{
-    gap:8px;
+    background:var(--card-bg);
+    border:1px solid var(--hairline);
+    border-radius:12px;
+    box-shadow:0 1px 0 rgba(20,21,31,.04);
   }
   body.age-older .older-col-headers .name-wrap{
-    flex:0 0 28%; width:28%; max-width:28%; min-width:0; min-height:1px;
+    flex:0 1 auto; width:auto; max-width:104px; min-width:56px; min-height:1px;
   }
   .older-col-headers .och-bar{
-    flex:1; min-width:36px; height:1px; visibility:hidden;
+    flex:1 1 auto; min-width:48px; height:1px; visibility:hidden;
   }
   .older-col-headers .och-badge{
     flex:none; width:30px; height:1px; visibility:hidden;
   }
   .older-col-headers .skill-zone.older-skills,
   .older-col-headers .older-skills-wrap{
-    gap:6px; min-width:0;
+    gap:4px; min-width:0; flex:0 0 auto;
   }
   .older-col-headers .och-skill{
-    display:flex; align-items:flex-end; justify-content:center;
-    text-align:center; overflow:hidden; line-height:1.1;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center; overflow:hidden; line-height:1.05;
     white-space:nowrap; text-overflow:ellipsis;
-    padding:0 1px;
+    padding:1px 0; height:auto;
   }
   .older-col-headers .lbl-abbr{display:none;}
   @media(max-width:899px){
     .older-col-headers .lbl-full{display:none;}
     .older-col-headers .lbl-abbr{display:inline;}
+  }
+  @media(max-width:420px){
+    body.age-older.skills-open .name-wrap,
+    body.age-older .older-col-headers .name-wrap{
+      max-width:72px; min-width:48px;
+    }
+    body.age-older.skills-open .skill-zone.older-skills,
+    .older-col-headers .skill-zone.older-skills{gap:3px;}
+    body.age-older.skills-open .skill-zone.older-skills .older-gauge,
+    body.age-older.skills-open .skill-zone.older-skills .older-face-chip,
+    body.age-older.skills-open .older-col-headers .och-skill{
+      flex:0 0 32px; width:32px; min-width:32px; max-width:32px;
+    }
+    body.age-older.skills-open .skill-zone.older-skills .older-gauge,
+    body.age-older.skills-open .skill-zone.older-skills .older-face-chip{
+      height:30px; font-size:12px;
+    }
   }
   .skills-subrow.older-bulk .rbtn.skill{
     background:var(--chrome-bg); color:var(--muted); border-color:var(--hairline);
