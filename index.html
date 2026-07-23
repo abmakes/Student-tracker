@@ -465,6 +465,9 @@
   .older-star-badge.has-star{
     color:#fff; background:var(--gold); border-color:rgba(0,0,0,.25);
   }
+  .older-star-badge.sticker-glow{
+    box-shadow:0 0 0 2px rgba(255,182,39,.45), 0 0 14px rgba(255,182,39,.75);
+  }
   [data-theme="dark"] .older-star-badge{background:rgba(241,240,248,.10);}
   .older-skills-wrap{display:flex; align-items:center; gap:6px; flex:none; min-width:0;}
   body.age-older.skills-open .older-skills-wrap{flex:1 1 auto;}
@@ -473,31 +476,80 @@
   .older-gauge,
   .older-face-chip{
     position:relative; width:34px; height:34px; border-radius:10px;
-    border:1px solid transparent; overflow:hidden; padding:0; flex:none;
+    border:1px solid var(--hairline); overflow:hidden; padding:0; flex:none;
     display:flex; align-items:center; justify-content:center;
     font-family:var(--font-display); font-weight:800; font-size:14px; line-height:1;
+    background:rgba(20,21,31,.08); color:var(--ink);
   }
+  [data-theme="dark"] .older-gauge,
+  [data-theme="dark"] .older-face-chip{background:rgba(241,240,248,.10);}
   body.age-older.skills-open .skill-zone.older-skills .older-gauge,
   body.age-older.skills-open .skill-zone.older-skills .older-face-chip{
     flex:1 1 0; width:auto; min-width:40px; max-width:96px; height:38px; font-size:15px;
   }
-  .older-gauge[data-step="1"]{background:#E6E4F0; color:#4A4860;}
-  .older-gauge[data-step="2"]{background:#F3E066; color:#4A3B10;}
-  .older-gauge[data-step="3"]{background:#A9E39B; color:#1F4A28;}
-  [data-theme="dark"] .older-gauge[data-step="1"]{background:#3A3A52; color:#C8C6D8;}
-  [data-theme="dark"] .older-gauge[data-step="2"]{background:#5C5322; color:#F3E066;}
-  [data-theme="dark"] .older-gauge[data-step="3"]{background:#294A26; color:#A9E39B;}
-  .older-gauge-num{position:relative; z-index:1;}
-  .older-face-chip{font-size:13px;}
-  body.age-older.skills-open .skill-zone.older-skills .older-face-chip{font-size:14px;}
-  .older-face-chip[data-disc="0"]{background:#A9E39B; color:#1F4A28;}
-  .older-face-chip[data-disc="1"]{background:#F3E066; color:#4A3B10;}
-  .older-face-chip[data-disc="2"],
-  .older-face-chip[data-disc="3"]{background:#FFB3AA; color:#6B2420;}
-  [data-theme="dark"] .older-face-chip[data-disc="0"]{background:#294A26; color:#A9E39B;}
-  [data-theme="dark"] .older-face-chip[data-disc="1"]{background:#5C5322; color:#F3E066;}
-  [data-theme="dark"] .older-face-chip[data-disc="2"],
-  [data-theme="dark"] .older-face-chip[data-disc="3"]{background:#5C2E3D; color:#FFB3AA;}
+  .older-gauge-fill{
+    position:absolute; left:0; right:0; bottom:0; height:0;
+    background:rgba(37,184,137,.45); pointer-events:none;
+  }
+  .older-gauge[data-level="1"] .older-gauge-fill{height:0;}
+  .older-gauge[data-level="2"] .older-gauge-fill{height:33%;}
+  .older-gauge[data-level="3"] .older-gauge-fill{height:66%;}
+  .older-gauge[data-level="4"] .older-gauge-fill{height:100%; background:rgba(37,184,137,.55);}
+  .older-gauge[data-level="4"]{
+    border-color:var(--mint);
+    box-shadow:0 0 0 2px rgba(37,184,137,.35), 0 0 12px rgba(37,184,137,.55);
+  }
+  .older-face-chip{font-size:16px; overflow:hidden;}
+  body.age-older.skills-open .skill-zone.older-skills .older-face-chip{font-size:18px;}
+  .older-face-chip[data-disc="0"]{background:#A9E39B; border-color:transparent;}
+  .older-face-chip[data-disc="1"],
+  .older-face-chip[data-disc="2"]{background:rgba(20,21,31,.08); border-color:var(--hairline);}
+  .older-face-chip[data-disc="3"]{background:#FFB3AA; border-color:transparent;}
+  [data-theme="dark"] .older-face-chip[data-disc="0"]{background:#294A26;}
+  [data-theme="dark"] .older-face-chip[data-disc="1"],
+  [data-theme="dark"] .older-face-chip[data-disc="2"]{background:rgba(241,240,248,.10);}
+  [data-theme="dark"] .older-face-chip[data-disc="3"]{background:#5C2E3D;}
+
+  /* ================= NAME SPINNER ================= */
+  .spin-overlay{
+    position:fixed; inset:0; z-index:280; background:rgba(20,21,31,.55);
+    display:flex; align-items:center; justify-content:center; padding:16px;
+  }
+  .spin-card{
+    width:min(440px,100%); background:var(--card-bg); border-radius:20px;
+    border:1px solid var(--hairline); box-shadow:0 16px 40px rgba(0,0,0,.28);
+    padding:16px; display:flex; flex-direction:column; gap:12px; max-height:92dvh;
+  }
+  .spin-header{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .spin-title{font-family:var(--font-display); font-weight:800; font-size:18px;}
+  .spin-stage{position:relative; width:100%; aspect-ratio:1; max-height:min(360px,58dvh); margin:0 auto;}
+  .spin-wheel{
+    width:100%; height:100%; border-radius:50%; border:4px solid var(--border-color);
+    transition:transform 0s; box-shadow:0 8px 24px rgba(0,0,0,.18);
+  }
+  .spin-pointer{
+    position:absolute; top:-4px; left:50%; transform:translateX(-50%);
+    width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent;
+    border-top:22px solid var(--coral); z-index:2; filter:drop-shadow(0 2px 2px rgba(0,0,0,.25));
+  }
+  .spin-winner{
+    text-align:center; font-family:var(--font-display); font-weight:800; font-size:22px;
+    min-height:1.2em; color:var(--ink);
+  }
+  .spin-actions{display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .spin-actions .rbtn{padding:8px 12px;}
+  .spin-pool{
+    display:flex; flex-wrap:wrap; gap:6px; justify-content:center; max-height:120px; overflow:auto;
+  }
+  .spin-chip{
+    border:1px solid var(--hairline); border-radius:999px; padding:5px 10px;
+    font-size:12px; font-weight:700; background:var(--pill-color, var(--card-bg-soft));
+    color:var(--ink); display:inline-flex; align-items:center; gap:6px;
+  }
+  .spin-chip button{
+    border:0; background:transparent; color:var(--coral); font-weight:800; cursor:pointer; padding:0 2px;
+  }
+  .spin-empty{text-align:center; color:var(--muted); font-size:13px; padding:8px;}
   .skills-bulk-pane{
     background:var(--chrome-bg);
     border-bottom:1px solid var(--hairline);
@@ -802,13 +854,31 @@
 
   var root = document.getElementById('app');
 
-  var RANGE_STEPS = [50, 75, 100];
-  var QUALITY_LEVELS = [2, 3, 4];
-  var QUALITY_LABELS = { 2:'Fair', 3:'Good', 4:'Excellent' };
+  var RANGE_STEPS = [25, 50, 75, 100];
+  var QUALITY_LEVELS = [1, 2, 3, 4];
+  var QUALITY_LABELS = { 1:'Poor', 2:'Fair', 3:'Good', 4:'Excellent' };
   var LMS_LEVELS = [1, 2, 3, 4];
   var LMS_LABELS = { 1:'Poor', 2:'Fair', 3:'Good', 4:'Excellent' };
   var OLDER_RANGE_KEYS = ['vocabulary', 'understanding', 'interaction'];
   var STAR_MILESTONE = 5;
+
+  var wheelState = {
+    removedIds: {},
+    pickCounts: {},
+    rotation: 0,
+    spinning: false,
+    lastWinnerId: null
+  };
+
+  function clearWheelState(){
+    wheelState = {
+      removedIds: {},
+      pickCounts: {},
+      rotation: 0,
+      spinning: false,
+      lastWinnerId: null
+    };
+  }
 
   function normalizeLmsScore(value){
     var n = Number(value);
@@ -851,12 +921,13 @@
     var n = Number(v);
     if(n >= 100) return 100;
     if(n >= 75) return 75;
-    return 50;
+    if(n >= 50) return 50;
+    return 25;
   }
 
   function normalizeQuality(v){
     var n = Number(v);
-    if(n === 2 || n === 4) return n;
+    if(QUALITY_LEVELS.indexOf(n) >= 0) return n;
     return 3;
   }
 
@@ -1449,22 +1520,15 @@
     var n = normalizeRangePct(pct);
     if(n >= 100) return 4;
     if(n >= 75) return 3;
-    return 2;
-  }
-
-  // Older skill gauges are three steps: Fair/Good/Excellent → show 1 / 2 / 3.
-  function lmsLevelToStep(level){
-    var n = Number(level);
-    if(n >= 4) return 3;
-    if(n >= 3) return 2;
+    if(n >= 50) return 2;
     return 1;
   }
 
   function olderGaugeHtml(level, attrs, title){
-    var step = lmsLevelToStep(level);
+    var lv = clamp(Number(level) || 1, 1, 4);
     return '' +
-      '<button class="older-gauge" data-level="' + level + '" data-step="' + step + '" ' + attrs + ' title="' + title + '">' +
-        '<span class="older-gauge-num">' + step + '</span>' +
+      '<button class="older-gauge" data-level="' + lv + '" ' + attrs + ' title="' + title + ' — ' + (LMS_LABELS[lv] || '') + '">' +
+        '<span class="older-gauge-fill"></span>' +
       '</button>';
   }
 
@@ -1601,6 +1665,7 @@
       '<div class="celebration-pane" id="celebrationPane"></div>' +
 
       '<div class="footer-bar">' +
+        '<button class="rbtn" id="spinBtn">Spin</button>' +
         '<button class="rbtn" id="exportBtn">Export CSV</button>' +
         '<button class="rbtn" id="rewardsBtn">Rewards</button>' +
         '<button class="rbtn" id="timerBtn">Timer</button>' +
@@ -1615,6 +1680,7 @@
 
     document.getElementById('backBtn').addEventListener('click', goHome);
     document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+    document.getElementById('spinBtn').addEventListener('click', openSpinWheel);
     document.getElementById('exportBtn').addEventListener('click', exportCsv);
     document.getElementById('endClassBtn').addEventListener('click', endClass);
     document.getElementById('rewardsBtn').addEventListener('click', toggleRewardsModal);
@@ -1672,7 +1738,9 @@
         '<button class="older-progress" data-older-star="sub" data-stu="' + s.id + '" title="Remove participation">' +
           '<span style="width:' + progress + '%"></span>' +
         '</button>' +
-        '<button class="older-star-badge' + (s.positive > 0 ? ' has-star' : '') + '" data-older-star="add" data-stu="' + s.id + '" title="Add participation">' +
+        '<button class="older-star-badge' + (s.positive > 0 ? ' has-star' : '') +
+          (s.positive >= STAR_MILESTONE ? ' sticker-glow' : '') +
+          '" data-older-star="add" data-stu="' + s.id + '" title="Add participation">' +
           countLabel +
         '</button>' +
       '</div>';
@@ -1704,9 +1772,10 @@
   }
 
   function olderDisciplineHtml(s){
+    var faces = ['😊','😐','🙁','😢'];
     var disc = clamp(s.negative, 0, 3);
     return '<button class="older-face-chip" data-disc="' + disc + '" data-older-face="' + s.id +
-      '" title="Discipline — tap to cycle">:(</button>';
+      '" title="Discipline — tap to cycle">' + faces[disc] + '</button>';
   }
 
   function rowTemplate(s, negativeEnabled, older){
@@ -2076,10 +2145,7 @@
 
   /* ---------------- LMS mapping (older classes) ---------------- */
   function pctToLms(pct){
-    var n = normalizeRangePct(pct);
-    if(n >= 100) return 4;
-    if(n >= 75) return 3;
-    return 2;
+    return rangeToLevel(pct);
   }
 
   function mapActiveFromStars(positive){
@@ -2151,7 +2217,7 @@
           '<div class="modal-title">LMS scores</div>' +
           '<button class="modal-close" id="lmsCloseBtn">✕</button>' +
         '</div>' +
-        '<p class="lms-hint">Copy these into the school LMS (Attitude, Active, Understand, Quality, Discipline). Scale: 2 Fair · 3 Good · 4 Excellent · Discipline may be 1 Poor.</p>' +
+        '<p class="lms-hint">Copy these into the school LMS (Attitude, Active, Understand, Quality, Discipline). Scale: 1 Poor · 2 Fair · 3 Good · 4 Excellent.</p>' +
         '<table class="lms-table">' +
           '<thead><tr><th>Student</th><th>Attitude</th><th>Active</th><th>Understand</th><th>Quality</th><th>Discipline</th></tr></thead>' +
           '<tbody>' + rowsHtml + '</tbody>' +
@@ -2169,6 +2235,196 @@
     document.getElementById('lmsCloseBtn').addEventListener('click', finish);
     document.getElementById('lmsDoneBtn').addEventListener('click', finish);
     overlay.addEventListener('click', function(e){ if(e.target === overlay) finish(); });
+  }
+
+  /* ---------------- name spinner ---------------- */
+  function getWheelPool(){
+    return presentStudents(state.currentClass).filter(function(s){
+      return !wheelState.removedIds[s.id];
+    });
+  }
+
+  function studentPillColor(s){
+    var palette = getPalette();
+    return palette[(s.colorIndex || 0) % palette.length].bg;
+  }
+
+  function buildWheelGradient(pool){
+    if(!pool.length) return 'conic-gradient(#ccc 0 360deg)';
+    var slice = 360 / pool.length;
+    var parts = pool.map(function(s, i){
+      var start = (i * slice).toFixed(2);
+      var end = ((i + 1) * slice).toFixed(2);
+      return studentPillColor(s) + ' ' + start + 'deg ' + end + 'deg';
+    });
+    return 'conic-gradient(' + parts.join(',') + ')';
+  }
+
+  function weightedPick(pool){
+    var weights = pool.map(function(s){
+      return 1 / (1 + (wheelState.pickCounts[s.id] || 0));
+    });
+    var total = weights.reduce(function(a, b){ return a + b; }, 0);
+    var r = Math.random() * total;
+    var acc = 0;
+    for(var i = 0; i < pool.length; i++){
+      acc += weights[i];
+      if(r <= acc) return pool[i];
+    }
+    return pool[pool.length - 1];
+  }
+
+  function playSpinTick(){
+    try{
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if(!Ctx) return;
+      if(!window.__spinAudioCtx) window.__spinAudioCtx = new Ctx();
+      var ctx = window.__spinAudioCtx;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.value = 880;
+      gain.gain.value = 0.03;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.03);
+    }catch(e){ /* ignore */ }
+  }
+
+  function closeSpinWheel(){
+    var el = document.getElementById('spinOverlay');
+    if(el) el.remove();
+    wheelState.spinning = false;
+  }
+
+  function renderSpinWheelBody(){
+    var pool = getWheelPool();
+    var winner = wheelState.lastWinnerId
+      ? (state.currentClass.students.find(function(s){ return s.id === wheelState.lastWinnerId; }) || null)
+      : null;
+    var wheel = document.getElementById('spinWheel');
+    var winnerEl = document.getElementById('spinWinner');
+    var poolEl = document.getElementById('spinPool');
+    if(wheel){
+      wheel.style.background = buildWheelGradient(pool);
+      wheel.style.transform = 'rotate(' + wheelState.rotation + 'deg)';
+    }
+    if(winnerEl){
+      winnerEl.textContent = winner ? winner.name : (pool.length ? 'Ready to spin' : 'No students in pool');
+    }
+    if(poolEl){
+      if(!pool.length){
+        poolEl.innerHTML = '<div class="spin-empty">Everyone was removed from this spin. Reset the pool.</div>';
+      } else {
+        poolEl.innerHTML = pool.map(function(s){
+          return '<span class="spin-chip" style="--pill-color:' + studentPillColor(s) + '">' +
+            escapeHtml(s.name) +
+            '<button type="button" data-spin-remove="' + s.id + '" title="Remove from this spin">✕</button>' +
+          '</span>';
+        }).join('');
+        poolEl.querySelectorAll('[data-spin-remove]').forEach(function(btn){
+          btn.addEventListener('click', function(){
+            if(wheelState.spinning) return;
+            wheelState.removedIds[btn.getAttribute('data-spin-remove')] = true;
+            if(wheelState.lastWinnerId === btn.getAttribute('data-spin-remove')) wheelState.lastWinnerId = null;
+            renderSpinWheelBody();
+          });
+        });
+      }
+    }
+    var spinGo = document.getElementById('spinGoBtn');
+    if(spinGo) spinGo.disabled = wheelState.spinning || pool.length === 0;
+  }
+
+  function runSpinAnimation(pool, winner){
+    var wheel = document.getElementById('spinWheel');
+    if(!wheel || !pool.length) return;
+    var slice = 360 / pool.length;
+    var winnerIndex = pool.findIndex(function(s){ return s.id === winner.id; });
+    if(winnerIndex < 0) winnerIndex = 0;
+    // Pointer is at top; segment i centers at i*slice + slice/2 from gradient start (0deg = top in conic? actually 0deg is typically from top in CSS conic from default... CSS conic-gradient starts from top center going clockwise in modern browsers when using `from 0deg` - default is from top).
+    var centerAngle = winnerIndex * slice + slice / 2;
+    var target = wheelState.rotation + 360 * 5 + (360 - (centerAngle % 360));
+    wheelState.spinning = true;
+    renderSpinWheelBody();
+
+    var start = wheelState.rotation;
+    var duration = 4200;
+    var t0 = performance.now();
+    var lastTickSeg = -1;
+
+    function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+    function frame(now){
+      var t = Math.min(1, (now - t0) / duration);
+      var eased = easeOutCubic(t);
+      var deg = start + (target - start) * eased;
+      wheelState.rotation = deg;
+      wheel.style.transform = 'rotate(' + deg + 'deg)';
+      var seg = Math.floor((((360 - (deg % 360)) % 360) / slice)) % pool.length;
+      if(seg !== lastTickSeg){
+        lastTickSeg = seg;
+        playSpinTick();
+      }
+      if(t < 1){
+        requestAnimationFrame(frame);
+      } else {
+        wheelState.spinning = false;
+        wheelState.lastWinnerId = winner.id;
+        wheelState.pickCounts[winner.id] = (wheelState.pickCounts[winner.id] || 0) + 1;
+        renderSpinWheelBody();
+        showToast(winner.name + '!');
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function openSpinWheel(){
+    if(!state.currentClass) return;
+    closeRewardsModal();
+    closeClassTimer();
+    closeSpinWheel();
+
+    var overlay = document.createElement('div');
+    overlay.className = 'spin-overlay';
+    overlay.id = 'spinOverlay';
+    overlay.innerHTML =
+      '<div class="spin-card">' +
+        '<div class="spin-header">' +
+          '<div class="spin-title">Name spinner</div>' +
+          '<button class="icon-btn" id="spinCloseBtn" title="Close">✕</button>' +
+        '</div>' +
+        '<div class="spin-stage">' +
+          '<div class="spin-pointer" aria-hidden="true"></div>' +
+          '<div class="spin-wheel" id="spinWheel"></div>' +
+        '</div>' +
+        '<div class="spin-winner" id="spinWinner"></div>' +
+        '<div class="spin-actions">' +
+          '<button class="rbtn" id="spinGoBtn">Spin</button>' +
+          '<button class="rbtn" id="spinResetBtn">Reset pool</button>' +
+        '</div>' +
+        '<div class="spin-pool" id="spinPool"></div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    document.getElementById('spinCloseBtn').addEventListener('click', closeSpinWheel);
+    overlay.addEventListener('click', function(e){ if(e.target === overlay && !wheelState.spinning) closeSpinWheel(); });
+    document.getElementById('spinResetBtn').addEventListener('click', function(){
+      if(wheelState.spinning) return;
+      wheelState.removedIds = {};
+      wheelState.lastWinnerId = null;
+      renderSpinWheelBody();
+    });
+    document.getElementById('spinGoBtn').addEventListener('click', function(){
+      if(wheelState.spinning) return;
+      var pool = getWheelPool();
+      if(!pool.length){ showToast('No students left to spin.'); return; }
+      var winner = weightedPick(pool);
+      runSpinAnimation(pool, winner);
+    });
+
+    renderSpinWheelBody();
   }
 
   /* ---------------- class timer ---------------- */
@@ -2384,6 +2640,7 @@
 
   function openClassTimer(){
     closeRewardsModal();
+    closeSpinWheel();
     var existing = document.getElementById('classTimerOverlay');
     if(existing){ existing.remove(); }
 
@@ -2434,6 +2691,8 @@
   /* ---------------- end class / archive ---------------- */
   async function finishEndClass(cls, report){
     await appendReport(cls.id, report);
+    clearWheelState();
+    closeSpinWheel();
 
     cls.students.forEach(function(s){
       s.positive = 0; s.negative = 0;
