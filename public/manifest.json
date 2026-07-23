@@ -1,0 +1,19 @@
+{
+  "name": "Student Class Tracker",
+  "short_name": "Class Tracker",
+  "description": "Track attendance, homework, behavior, skills, rewards, and LMS report scores in the classroom.",
+  "start_url": "/Student-tracker/",
+  "scope": "/Student-tracker/",
+  "display": "standalone",
+  "background_color": "#effcff",
+  "theme_color": "#58c7df",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
