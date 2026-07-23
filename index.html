@@ -424,7 +424,7 @@
   .star-fill{fill:var(--muted); stroke:var(--border-color); stroke-width:2; stroke-linejoin:round; stroke-linecap:round;}
   .star-slot.filled .star-fill{fill:var(--gold); stroke-width:1.5;}
   .star-slot.badge{opacity:1; transform:scale(1.05); font-weight:800; font-size:14px;
-    color:#fff; background:var(--gold); border-radius:50%; width:27px; height:27px;
+    color:var(--ink); background:var(--gold); border-radius:50%; width:27px; height:27px;
     border:1.5px solid rgba(0,0,0,.25);}
 
   /* Skill icons: hidden by default everywhere. A single global ribbon toggle
@@ -439,7 +439,10 @@
   body.age-older .student-row{
     height:auto; min-height:48px; padding:6px 6px; gap:8px;
   }
-  body.age-older .name-wrap{flex:0 1 auto; max-width:28%; justify-content:flex-start;}
+  body.age-older .name-wrap{
+    flex:0 0 28%; width:28%; max-width:28%; min-width:0;
+    justify-content:flex-start;
+  }
   .star-zone.older-stars{
     flex:1; min-width:0; display:flex; align-items:center; gap:8px; justify-content:flex-end;
   }
@@ -459,34 +462,37 @@
     flex:none; width:30px; height:30px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
     font-family:var(--font-display); font-weight:800; font-size:13px;
-    color:var(--muted); background:rgba(20,21,31,.07);
+    color:var(--ink); background:rgba(20,21,31,.07);
     border:1.5px solid var(--hairline); padding:0; line-height:1;
   }
   .older-star-badge.has-star{
-    color:#fff; background:var(--gold); border-color:rgba(0,0,0,.25);
+    color:var(--ink); background:var(--gold); border-color:rgba(0,0,0,.25);
   }
   .older-star-badge.sticker-glow{
     box-shadow:0 0 0 2px rgba(255,182,39,.45), 0 0 14px rgba(255,182,39,.75);
   }
-  [data-theme="dark"] .older-star-badge{background:rgba(241,240,248,.10);}
+  [data-theme="dark"] .older-star-badge{background:rgba(241,240,248,.10); color:var(--ink);}
   .older-skills-wrap{display:flex; align-items:center; gap:6px; flex:none; min-width:0;}
-  body.age-older.skills-open .older-skills-wrap{flex:1 1 auto;}
+  body.age-older.skills-open .older-skills-wrap{flex:1 1 auto; min-width:0;}
   .skill-zone.older-skills{gap:6px; max-width:none; justify-content:flex-end;}
-  body.age-older.skills-open .skill-zone.older-skills{flex:1; gap:8px; min-width:0;}
+  body.age-older.skills-open .skill-zone.older-skills{flex:1; gap:6px; min-width:0;}
   .older-gauge,
   .older-face-chip{
-    position:relative; width:34px; height:34px; border-radius:10px;
+    position:relative; width:36px; height:32px; border-radius:10px;
     border:1px solid var(--hairline); overflow:hidden; padding:0; flex:none;
     display:flex; align-items:center; justify-content:center;
-    font-family:var(--font-display); font-weight:800; font-size:14px; line-height:1;
+    font-family:var(--font-display); font-weight:800; font-size:13px; line-height:1;
     background:rgba(20,21,31,.08); color:var(--ink);
   }
   [data-theme="dark"] .older-gauge,
   [data-theme="dark"] .older-face-chip{background:rgba(241,240,248,.10);}
   body.age-older.skills-open .skill-zone.older-skills .older-gauge,
-  body.age-older.skills-open .skill-zone.older-skills .older-face-chip{
-    flex:1 1 0; width:auto; min-width:40px; max-width:96px; height:38px; font-size:15px;
+  body.age-older.skills-open .skill-zone.older-skills .older-face-chip,
+  body.age-older.skills-open .older-col-headers .och-skill{
+    flex:1 1 0; width:auto; min-width:36px; max-width:80px; height:32px;
   }
+  body.age-older.skills-open .skill-zone.older-skills .older-gauge{font-size:13px; color:var(--ink);}
+  body.age-older.skills-open .skill-zone.older-skills .older-face-chip{font-size:16px;}
   .older-gauge-fill{
     position:absolute; left:0; right:0; bottom:0; height:0;
     background:rgba(37,184,137,.45); pointer-events:none;
@@ -499,8 +505,12 @@
     border-color:var(--mint);
     box-shadow:0 0 0 2px rgba(37,184,137,.35), 0 0 12px rgba(37,184,137,.55);
   }
+  .older-gauge-num{
+    position:relative; z-index:1; color:var(--ink); font-weight:800;
+    font-family:var(--font-display); font-size:13px; line-height:1;
+    pointer-events:none;
+  }
   .older-face-chip{font-size:16px; overflow:hidden;}
-  body.age-older.skills-open .skill-zone.older-skills .older-face-chip{font-size:18px;}
   .older-face-chip[data-disc="0"]{background:#A9E39B; border-color:transparent;}
   .older-face-chip[data-disc="1"],
   .older-face-chip[data-disc="2"]{background:rgba(20,21,31,.08); border-color:var(--hairline);}
@@ -522,15 +532,45 @@
   }
   .spin-header{display:flex; align-items:center; justify-content:space-between; gap:8px;}
   .spin-title{font-family:var(--font-display); font-weight:800; font-size:18px;}
-  .spin-stage{position:relative; width:100%; aspect-ratio:1; max-height:min(360px,58dvh); margin:0 auto;}
+  .spin-stage{
+    --spin-size:min(300px, calc(100vw - 72px), 48dvh);
+    position:relative;
+    width:var(--spin-size);
+    height:var(--spin-size);
+    aspect-ratio:1 / 1;
+    margin:0 auto;
+    flex:none;
+    flex-shrink:0;
+  }
   .spin-wheel{
-    width:100%; height:100%; border-radius:50%; border:4px solid var(--border-color);
-    transition:transform 0s; box-shadow:0 8px 24px rgba(0,0,0,.18);
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    border-radius:50%;
+    border:4px solid var(--border-color);
+    overflow:hidden;
+    box-shadow:0 8px 24px rgba(0,0,0,.18);
+    background:#e8f0fa;
   }
   .spin-pointer{
     position:absolute; top:-4px; left:50%; transform:translateX(-50%);
     width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent;
     border-top:22px solid var(--coral); z-index:2; filter:drop-shadow(0 2px 2px rgba(0,0,0,.25));
+  }
+  .spin-seg-label{
+    position:absolute; left:50%; top:50%; width:0; height:0;
+    transform-origin:0 0; pointer-events:none;
+  }
+  .spin-seg-text{
+    display:block;
+    width:calc(var(--spin-size) * 0.28);
+    max-width:88px;
+    margin-left:calc(var(--spin-size) * -0.14);
+    text-align:center;
+    font-family:var(--font-display);
+    font-size:clamp(9px, calc(var(--spin-size) * 0.038), 12px);
+    font-weight:800; line-height:1.1;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    text-shadow:0 1px 0 rgba(255,255,255,.65);
   }
   .spin-winner{
     text-align:center; font-family:var(--font-display); font-weight:800; font-size:22px;
@@ -565,8 +605,12 @@
     letter-spacing:.02em; text-transform:uppercase;
     border-bottom:1px solid var(--hairline);
   }
+  body.age-older .student-row,
+  body.age-older .older-col-headers{
+    gap:8px;
+  }
   body.age-older .older-col-headers .name-wrap{
-    flex:0 1 auto; max-width:28%; min-width:0; min-height:1px;
+    flex:0 0 28%; width:28%; max-width:28%; min-width:0; min-height:1px;
   }
   .older-col-headers .och-bar{
     flex:1; min-width:36px; height:1px; visibility:hidden;
@@ -574,9 +618,15 @@
   .older-col-headers .och-badge{
     flex:none; width:30px; height:1px; visibility:hidden;
   }
+  .older-col-headers .skill-zone.older-skills,
+  .older-col-headers .older-skills-wrap{
+    gap:6px; min-width:0;
+  }
   .older-col-headers .och-skill{
-    flex:1 1 0; min-width:40px; max-width:96px; text-align:center;
-    overflow:hidden; line-height:1.15; white-space:nowrap; text-overflow:ellipsis;
+    display:flex; align-items:flex-end; justify-content:center;
+    text-align:center; overflow:hidden; line-height:1.1;
+    white-space:nowrap; text-overflow:ellipsis;
+    padding:0 1px;
   }
   .older-col-headers .lbl-abbr{display:none;}
   @media(max-width:899px){
@@ -1529,6 +1579,7 @@
     return '' +
       '<button class="older-gauge" data-level="' + lv + '" ' + attrs + ' title="' + title + ' — ' + (LMS_LABELS[lv] || '') + '">' +
         '<span class="older-gauge-fill"></span>' +
+        '<span class="older-gauge-num">' + lv + '</span>' +
       '</button>';
   }
 
@@ -2257,7 +2308,20 @@
       var end = ((i + 1) * slice).toFixed(2);
       return studentPillColor(s) + ' ' + start + 'deg ' + end + 'deg';
     });
-    return 'conic-gradient(' + parts.join(',') + ')';
+    return 'conic-gradient(from -90deg, ' + parts.join(',') + ')';
+  }
+
+  function buildWheelLabelsHtml(pool){
+    if(!pool.length) return '';
+    var slice = 360 / pool.length;
+    // Place names ~36% of the wheel radius out from center (scales with --spin-size).
+    return pool.map(function(s, i){
+      var mid = -90 + i * slice + slice / 2;
+      return '<span class="spin-seg-label" style="transform:rotate(' + mid + 'deg)">' +
+        '<span class="spin-seg-text" style="transform:translateY(calc(var(--spin-size) * -0.36)) rotate(' + (-mid) + 'deg)">' +
+          escapeHtml(s.name) +
+        '</span></span>';
+    }).join('');
   }
 
   function weightedPick(pool){
@@ -2309,6 +2373,7 @@
     if(wheel){
       wheel.style.background = buildWheelGradient(pool);
       wheel.style.transform = 'rotate(' + wheelState.rotation + 'deg)';
+      wheel.innerHTML = buildWheelLabelsHtml(pool);
     }
     if(winnerEl){
       winnerEl.textContent = winner ? winner.name : (pool.length ? 'Ready to spin' : 'No students in pool');
@@ -2343,7 +2408,8 @@
     var slice = 360 / pool.length;
     var winnerIndex = pool.findIndex(function(s){ return s.id === winner.id; });
     if(winnerIndex < 0) winnerIndex = 0;
-    // Pointer is at top; segment i centers at i*slice + slice/2 from gradient start (0deg = top in conic? actually 0deg is typically from top in CSS conic from default... CSS conic-gradient starts from top center going clockwise in modern browsers when using `from 0deg` - default is from top).
+    // Pointer at top; gradient starts at -90deg (top). Segment i covers
+    // [i*slice, (i+1)*slice] in that space; center sits at i*slice + slice/2.
     var centerAngle = winnerIndex * slice + slice / 2;
     var target = wheelState.rotation + 360 * 5 + (360 - (centerAngle % 360));
     wheelState.spinning = true;
