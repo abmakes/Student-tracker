@@ -2355,7 +2355,8 @@
       var end = ((i + 1) * slice).toFixed(2);
       return studentPillColor(s) + ' ' + start + 'deg ' + end + 'deg';
     });
-    return 'conic-gradient(from -90deg, ' + parts.join(',') + ')';
+    // CSS conic 0deg is already at the top (pointer). Do not offset with from -90deg.
+    return 'conic-gradient(from 0deg, ' + parts.join(',') + ')';
   }
 
   function buildWheelLabelsHtml(pool){
@@ -2363,7 +2364,7 @@
     var slice = 360 / pool.length;
     // Place names ~36% of the wheel radius out from center (scales with --spin-size).
     return pool.map(function(s, i){
-      var mid = -90 + i * slice + slice / 2;
+      var mid = i * slice + slice / 2;
       return '<span class="spin-seg-label" style="transform:rotate(' + mid + 'deg)">' +
         '<span class="spin-seg-text" style="transform:translateY(calc(var(--spin-size) * -0.36)) rotate(' + (-mid) + 'deg)">' +
           escapeHtml(s.name) +
@@ -2455,10 +2456,16 @@
     var slice = 360 / pool.length;
     var winnerIndex = pool.findIndex(function(s){ return s.id === winner.id; });
     if(winnerIndex < 0) winnerIndex = 0;
-    // Pointer at top; gradient starts at -90deg (top). Segment i covers
-    // [i*slice, (i+1)*slice] in that space; center sits at i*slice + slice/2.
+    // Pointer at top. With conic from 0deg, segment i is [i*slice, (i+1)*slice]
+    // clockwise from top; its center is at i*slice + slice/2. Rotate so that
+    // center lands under the pointer: (center + rotation) % 360 === 0.
     var centerAngle = winnerIndex * slice + slice / 2;
-    var target = wheelState.rotation + 360 * 5 + (360 - (centerAngle % 360));
+    function norm360(d){ return ((d % 360) + 360) % 360; }
+    var current = norm360(wheelState.rotation);
+    var needed = norm360(-centerAngle); // same as (360 - centerAngle) % 360
+    var delta = norm360(needed - current);
+    if(delta < 20) delta += 360; // always travel a bit even if already near
+    var target = wheelState.rotation + 360 * 5 + delta;
     wheelState.spinning = true;
     renderSpinWheelBody();
 
@@ -2475,7 +2482,8 @@
       var deg = start + (target - start) * eased;
       wheelState.rotation = deg;
       wheel.style.transform = 'rotate(' + deg + 'deg)';
-      var seg = Math.floor((((360 - (deg % 360)) % 360) / slice)) % pool.length;
+      var localAtPointer = norm360(-deg);
+      var seg = Math.floor(localAtPointer / slice) % pool.length;
       if(seg !== lastTickSeg){
         lastTickSeg = seg;
         playSpinTick();
@@ -2483,6 +2491,9 @@
       if(t < 1){
         requestAnimationFrame(frame);
       } else {
+        // Snap exactly onto the winner center to avoid float drift.
+        wheelState.rotation = start + (target - start);
+        wheel.style.transform = 'rotate(' + wheelState.rotation + 'deg)';
         wheelState.spinning = false;
         wheelState.lastWinnerId = winner.id;
         wheelState.pickCounts[winner.id] = (wheelState.pickCounts[winner.id] || 0) + 1;
