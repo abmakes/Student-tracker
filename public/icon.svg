@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>Student Class Tracker</title>
+  <defs>
+    <linearGradient id="sky" x1="84" x2="430" y1="62" y2="456" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D8F6FF"/>
+      <stop offset="1" stop-color="#78DFBD"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="150" x2="338" y1="94" y2="298" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF3A6"/>
+      <stop offset="0.55" stop-color="#FFD45E"/>
+      <stop offset="1" stop-color="#FFB84F"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="118" fill="url(#sky)"/>
+  <circle cx="257" cy="220" r="116" fill="url(#sun)"/>
+  <path fill="#17324D" d="M257 77l23 69 72-1-58 42 23 68-60-41-59 41 22-68-58-42 72 1 23-69z" opacity=".18"/>
+  <path fill="#FFFFFF" d="M119 345c37-50 84-75 139-75 54 0 100 25 137 75 11 15 0 37-19 37H138c-19 0-30-22-19-37z" opacity=".86"/>
+  <path fill="#FF7D72" d="M157 374h200c18 0 32 14 32 32v12H125v-12c0-18 14-32 32-32z"/>
+  <circle cx="214" cy="222" r="16" fill="#17324D"/>
+  <circle cx="300" cy="222" r="16" fill="#17324D"/>
+  <path fill="none" stroke="#17324D" stroke-linecap="round" stroke-width="18" d="M217 267c25 22 55 22 80 0"/>
+</svg>
